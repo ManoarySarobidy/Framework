@@ -5,12 +5,18 @@
 package etu2032.framework.servlet;
 
 import etu2032.framework.Mapping;
+import etu2032.framework.annotation.Url;
+import etu2032.framework.utility.ClassUtility;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -18,16 +24,56 @@ import java.util.HashMap;
  */
 public class FrontServlet extends HttpServlet {
 
-    HashMap<String,Mapping> mappingUrl;
-    
+    HashMap<String, Mapping> mappingUrl;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/plain;charset=UTF-8");
         String url = request.getRequestURI();
         url = url.substring(request.getContextPath().length());
-        response.getWriter().write(url);
+//        response.getWriter().println();
+        PrintWriter out = response.getWriter();
+        out.println("===== All Availables URL : ===== ");
+        out.println();
+        for( Map.Entry<String , Mapping> sets : this.getMappingUrl().entrySet() ){
+           out.println("(url ==>'" + sets.getKey() + "') ===>('" + (sets.getValue()).getClassName()+"/"+(sets.getValue()).getMethod() +"')");
+        }
     }
 
+    @Override
+    public void init() throws ServletException {
+        try {
+            super.init();
+            String packages = "etu2032.test"; // Avadika dynamique fotsiny ito
+            this.setMappingUrl();
+            List<Class> cs = ClassUtility.getClassFrom(packages);
+            for(Class c : cs){
+                Method[] methods = c.getDeclaredMethods();
+                for( Method m : methods ){
+                    if( m.isAnnotationPresent(Url.class) ){
+                        Url url = m.getAnnotation(Url.class);
+                        if( !url.url().isEmpty() && url.url() != null ){
+                           Mapping map = new Mapping( c.getName() , m.getName() );
+                           this.getMappingUrl().put(url.url(), map);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public HashMap<String, Mapping> getMappingUrl() {
+        return mappingUrl;
+    }
+
+    public void setMappingUrl() {
+        this.mappingUrl = new HashMap<String , Mapping>();
+    }
+    
+    
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -66,5 +112,4 @@ public class FrontServlet extends HttpServlet {
 //    public String getServletInfo() {
 //        return "Short description";
 //    }// </editor-fold>
-
 }
