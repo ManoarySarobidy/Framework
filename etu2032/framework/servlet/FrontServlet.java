@@ -13,10 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,19 +28,41 @@ import java.util.Map;
 public class FrontServlet extends HttpServlet {
 
     HashMap<String, Mapping> mappingUrl;
+//    My Changes
+    String MODEL_PATH;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/plain;charset=UTF-8");
         String url = request.getRequestURI();
         url = url.substring(request.getContextPath().length());
-//        response.getWriter().println();
         PrintWriter out = response.getWriter();
         out.println("===== All Availables URL : ===== ");
-        out.println();
+        out.println("===> Main Url ===> " + url);
         for( Map.Entry<String , Mapping> sets : this.getMappingUrl().entrySet() ){
            out.println("(url ==>'" + sets.getKey() + "') ===>('" + (sets.getValue()).getClassName()+"/"+(sets.getValue()).getMethod() +"')");
         }
+        try{
+            Mapping urls = this.getMappingUrl().get(url);
+//            Alaina ny méthode sy ny class
+            Class tr = Class.forName(urls.getClassName());
+//            Azo ilay class de alaina le methode
+            Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
+//            Azo ilay methode de executena fotsiny
+            method.invoke(tr.getConstructor().newInstance(), (Object[]) null);
+        }catch(NullPointerException nu){
+                out.println("Désolé cette url n'existe pas ");
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            ex.printStackTrace(out);
+        } catch(Exception e){
+            e.printStackTrace(out);
+        }
+        // Rehefa azo ilay url de aseho
+//        Rehefa aseho de alefa ily izy
+        
+        // Rehefa azo ilay url de aseho
+//        Rehefa aseho de alefa ily izy
+        
     }
 
     @Override
@@ -72,8 +97,13 @@ public class FrontServlet extends HttpServlet {
         this.mappingUrl = new HashMap<String , Mapping>();
     }
     
-    
-    
+    public void setModelPath(String path){
+        this.MODEL_PATH = path;
+    }
+    public String getModelPath(){
+        return this.MODEL_PATH;
+    }
+        
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
