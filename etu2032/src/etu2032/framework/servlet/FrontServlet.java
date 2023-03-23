@@ -6,7 +6,6 @@ package etu2032.framework.servlet;
 
 import etu2032.framework.Mapping;
 import etu2032.framework.annotation.Url;
-import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.ClassUtility;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -50,13 +49,6 @@ public class FrontServlet extends HttpServlet {
             Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
 //            Azo ilay methode de executena fotsiny
             Object res =  method.invoke(tr.getConstructor().newInstance(), (Object[]) null);
-            
-            if( res instanceof ModelView){
-                    ModelView view = (ModelView) res;
-                    String v = view.getView();
-                    RequestDispatcher disp = request.getRequestDispatcher(v);
-                    disp.forward(request, response);
-            }
             
         }catch(NullPointerException nu){
                 out.println("Désolé cette url n'existe pas ");
