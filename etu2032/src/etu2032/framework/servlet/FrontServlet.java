@@ -34,17 +34,20 @@ public class FrontServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/plain;charset=UTF-8");
-        String url = request.getRequestURI();
-        url = url.substring(request.getContextPath().length());
+        String url = request.getRequestURI().trim();
+        url = url.substring(request.getContextPath().length()).trim();
         PrintWriter out = response.getWriter();
         out.println("===== All Availables URL : ===== ");
         out.println("===> Main Url ===> " + url);
         for( Map.Entry<String , Mapping> sets : this.getMappingUrl().entrySet() ){
            out.println("(url ==>'" + sets.getKey() + "') ===>('" + (sets.getValue()).getClassName()+"/"+(sets.getValue()).getMethod() +"')");
         }
+
         try{
+        
             Mapping urls = this.getMappingUrl().get(url);
 //            Alaina ny méthode sy ny class
+            out.println(urls);
             Class tr = Class.forName(urls.getClassName());
 //            Azo ilay class de alaina le methode
             Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
