@@ -49,6 +49,12 @@ public class FrontServlet extends HttpServlet {
             Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
 //            Azo ilay methode de executena fotsiny
             Object res =  method.invoke(tr.getConstructor().newInstance(), (Object[]) null);
+
+            if( res instanceof ModelView ){
+                ModelView view = (ModelView) res;
+                RequestDispatcher r = request.getRequestDispatcher( view.getView() );
+                r.forward(request , response);
+            }
             
         }catch(NullPointerException nu){
                 out.println("Désolé cette url n'existe pas ");
