@@ -6,7 +6,9 @@ package etu2032.framework.servlet;
 
 import etu2032.framework.Mapping;
 import etu2032.framework.annotation.Url;
+import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.ClassUtility;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +20,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -49,7 +49,15 @@ public class FrontServlet extends HttpServlet {
 //            Azo ilay class de alaina le methode
             Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
 //            Azo ilay methode de executena fotsiny
-            method.invoke(tr.getConstructor().newInstance(), (Object[]) null);
+            Object res =  method.invoke(tr.getConstructor().newInstance(), (Object[]) null);
+            
+            if( res instanceof ModelView){
+                    ModelView view = (ModelView) res;
+                    String v = view.getView();
+                    RequestDispatcher disp = request.getRequestDispatcher(v);
+                    disp.forward(request, response);
+            }
+            
         }catch(NullPointerException nu){
                 out.println("Désolé cette url n'existe pas ");
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -69,7 +77,8 @@ public class FrontServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             super.init();
-            String packages = "etu2032.test"; // Avadika dynamique fotsiny ito
+            String packages = String.valueOf(getInitParameter("packages")); // Avadika dynamique fotsiny ito
+            System.out.println(packages);
             this.setMappingUrl();
             List<Class> cs = ClassUtility.getClassFrom(packages);
             for(Class c : cs){

@@ -11,6 +11,15 @@ package etu2032.framework;
 public class Mapping {
     String className;
     String method;
+    
+    public Mapping(){
+        
+    }
+    
+    public Mapping(String  name , String method){
+        this.setClassName(name);
+        this.setMethod(method);
+    }
 
     public String getClassName() {
         return className;
