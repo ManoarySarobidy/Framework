@@ -36,15 +36,12 @@ public class FrontServlet extends HttpServlet {
         response.setContentType("text/plain;charset=UTF-8");
         String url = request.getRequestURI().trim();
         url = url.substring(request.getContextPath().length()).trim();
+        // url = url.substring("/FrontServlet".length()).trim();
         PrintWriter out = response.getWriter();
-        out.println("===== All Availables URL : ===== ");
-        out.println("===> Main Url ===> " + url);
-        for( Map.Entry<String , Mapping> sets : this.getMappingUrl().entrySet() ){
-           out.println("(url ==>'" + sets.getKey() + "') ===>('" + (sets.getValue()).getClassName()+"/"+(sets.getValue()).getMethod() +"')");
-        }
-
+        out.println(request.getRequestURI());
+        this.displayUrls(out , url);
         try{
-        
+            System.out.println("hahahahahahaha");
             Mapping urls = this.getMappingUrl().get(url);
 //            Alaina ny méthode sy ny class
             out.println(urls);
@@ -56,7 +53,7 @@ public class FrontServlet extends HttpServlet {
 
             if( res instanceof ModelView ){
                 ModelView view = (ModelView) res;
-                RequestDispatcher r = request.getRequestDispatcher( view.getView() );
+                RequestDispatcher r = request.getRequestDispatcher( "/"+view.getView() );
                 r.forward(request , response);
             }
             
@@ -66,14 +63,21 @@ public class FrontServlet extends HttpServlet {
             ex.printStackTrace(out);
         } catch(Exception e){
             e.printStackTrace(out);
-        }
-        // Rehefa azo ilay url de aseho
-//        Rehefa aseho de alefa ily izy
-        
-        // Rehefa azo ilay url de aseho
-//        Rehefa aseho de alefa ily izy
-        
+        }   
     }
+
+    private void displayUrls(PrintWriter out , String url){
+        out.println("===== All Availables URL : ===== ");
+        out.println("===> Main Url ===> " + url);
+        for( Map.Entry<String , Mapping> sets : this.getMappingUrl().entrySet() ){
+           out.println("(url ==>'" + sets.getKey() + "') ===>('" + (sets.getValue()).getClassName()+"/"+(sets.getValue()).getMethod() +"')");
+        }
+    }
+
+    // private void redirect(HttpServletRequest request , HttpServletResponse response , String url){
+    //     RequestDispatcher dispacther = request.getRequestDispatcher(url);
+    //     dispacther.forward(request , response);
+    // }
 
     @Override
     public void init() throws ServletException {

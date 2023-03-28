@@ -2,16 +2,15 @@
 
 # Variables for directory
 HOME_JAVA_LIB=$HOME/lib # Folder where the user put their lib file (jar file)
-JAVA_PROJECT=$HOME/Documents/GitHub/Framework 
+JAVA_PROJECT=$HOME/Documents/GitHub/Framework # PARENT DIR FOR TEST PROJECT
 TOMCAT=$HOME/Desktop/tomcat/webapps/ # Tomcat home
+tomcat_bin=$HOME/Desktop/tomcat/bin
 SRC='./src/' # src folder
 BIN='./bin/' # bin folder
 TEST_DIR="Test Framework/" # Project Test Folder
 TEST_PROJET="Test"
 WEB="WEB-INF" # Web-Inf folder
 LIB="lib" # lib folder
-
-
 
 FILES=($(find $SRC -name "*.java")) # Find file in $SRC for every
 for FILE in "${FILES[@]}"
@@ -35,17 +34,11 @@ cp 'framework.jar' $JAVA_PROJECT/"$TEST_DIR"/"$TEST_PROJET"/$WEB/$LIB
 
 cd $JAVA_PROJECT/"$TEST_DIR"/"$TEST_PROJET"
 
-# Rehefa tonga ato de c
-
-# FI=($(find $SRC -name "*.java"))
-# for FILE in "${FI[@]}"
-# do
-# 	cp "$FI" .
-# done
-
-# javac -d ./"$TEST_PROJET"/$WEB
-
 jar -cf $1.war .
 
 cp $1.war $TOMCAT
 rm *.war
+
+cd $tomcat_bin
+sudo ./catalina.sh stop
+sudo ./catalina.sh start
