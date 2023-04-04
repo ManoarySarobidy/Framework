@@ -22,8 +22,8 @@ done
 javac -d $BIN "$SRC"/*.java # compilena any anaty bin ny java
 rm $SRC/*.java # alana ny java eo ivelany mba tsy hisy trace
 
-cd $BIN # miditra any anaty bin
-jar -cf framework.jar . # avadika framework.jar ny contenu 
+cd $BIN # miditra any anaty bin!
+jar -cvf framework.jar . # avadika framework.jar ny contenu 
 
 cp 'framework.jar' $HOME_JAVA_LIB
 
@@ -33,19 +33,22 @@ export CLASSPATH=$CLASSPATH:$HOME_JAVA_LIB/'framework.jar' # atao anaty classpat
 
 cp 'framework.jar' $JAVA_PROJECT/"$TEST_DIR"/"$TEST_PROJET"/$WEB/$LIB
 
+cd $JAVA_PROJECT/"$TEST_DIR"/
+./compile.sh
 cd $JAVA_PROJECT/"$TEST_DIR"/"$TEST_PROJET"
 
-# Rehefa tonga ato de c
+# # Rehefa tonga ato de c
 
-# FI=($(find $SRC -name "*.java"))
-# for FILE in "${FI[@]}"
-# do
-# 	cp "$FI" .
-# done
+# # FI=($(find $SRC -name "*.java"))
+# # for FILE in "${FI[@]}"
+# # do
+# # 	cp "$FI" .
+# # done
 
+# pwd
 # javac -d ./"$TEST_PROJET"/$WEB
 
-jar -cf $1.war .
+jar -cvf $1.war .
 
 cp $1.war $TOMCAT
 rm *.war

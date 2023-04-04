@@ -57,6 +57,8 @@ public class FrontServlet extends HttpServlet {
             if( res instanceof ModelView ){
                 ModelView view = (ModelView) res;
                 RequestDispatcher r = request.getRequestDispatcher( view.getView() );
+                HashMap<String , Object> data = view.getData();
+                this.setDatas(request , data );
                 r.forward(request , response);
             }
             
@@ -73,6 +75,12 @@ public class FrontServlet extends HttpServlet {
         // Rehefa azo ilay url de aseho
 //        Rehefa aseho de alefa ily izy
         
+    }
+
+    private void setDatas(HttpServletRequest request , HashMap<String , Object> data) throws Exception{
+        for( Map.Entry<String , Object> sets : data.entrySet()){
+            request.setAttribute( sets.getKey() , sets.getValue() );
+        }
     }
 
     @Override
