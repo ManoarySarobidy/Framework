@@ -4,15 +4,23 @@
  */
 package etu2032.framework.modelview;
 
+import java.util.*;
+
 public class ModelView {
     
     String view;
+    HashMap<String , Object> data;
     
     public ModelView(){
-        
+        this.setData();
     }
     public ModelView( String view ){
-           this.setView(view);
+        this.setView(view);
+        this.setData();
+    }
+
+    public void addItem( String key , Object value ){
+        this.getData().put(key , value);
     }
 
     public String getView() {
@@ -21,6 +29,17 @@ public class ModelView {
 
     public void setView(String view) {
         this.view = view;
+    }
+
+    public void setData(){
+        this.data = new HashMap<String , Object>();
+    }
+    public void setData( HashMap<String , Object> ob ){
+        this.data = new HashMap<String , Object>();
+    }
+    
+    public HashMap<String, Object> getData(){
+        return this.data;
     }
     
 }
