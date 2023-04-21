@@ -8,7 +8,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 /**
  *
  * @author sarobidy
@@ -41,4 +42,36 @@ public class ClassUtility {
         }
         return null;
     }
+
+    public static String getSetter( Field f ){
+        // Inona ny ataoko ato
+        // Maka Setter
+        String prefix = ( f.getType() == Boolean.TYPE ) ? "is" : "set";
+        String fieldName = f.getName();
+        fieldName = fieldName.substring(0,1).toUpperCase().concat(fieldName.substring(1));
+        String methodName = prefix + fieldName;
+        return methodName;
+    }
+
+    public static Object cast( Parameter parameter, String toCast ){
+        if( parameter.getType() == int.class ){
+            return Integer.parseInt(toCast);
+        }else if( parameter.getType() == double.class ){
+            return Double.parseDouble(toCast);
+        }else if( parameter.getType() == boolean.class ){
+            return Boolean.parseBoolean(toCast);
+        }
+        return toCast;
+    }
+    public static Object cast( Object object ){
+        if( object.getClass() == Integer.TYPE ){
+            return Integer.parseInt(String.valueOf(object));
+        }else if( object.getClass() == Double.TYPE){
+            return Double.parseDouble(String.valueOf(object));
+        }else if( object.getClass() == Boolean.TYPE){
+            return Boolean.parseBoolean(String.valueOf(object));
+        }
+        return object;
+    }
+
 }
