@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +33,10 @@ public class FrontServlet extends HttpServlet {
 //    My Changes
     String MODEL_PATH;
 
+    @SuppressWarnings("unchecked")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/plain;charset=UTF-8");
+        // response.setContentType("text/plain;charset=UTF-8");
         String url = request.getRequestURI().trim();
         url = url.substring(request.getContextPath().length()).trim();
         PrintWriter out = response.getWriter();
@@ -49,10 +52,38 @@ public class FrontServlet extends HttpServlet {
 //            Alaina ny méthode sy ny class
             out.println(urls);
             Class tr = Class.forName(urls.getClassName());
+
+            // Eto no miampy kely fotsiny mila teneniko aloha hoe alaivo ny Field rehetra
+
+            Field[] fields = tr.getDeclaredFields();
+
+            // Azo ny fields tao
+
+            // Mila manontany avy eo hoe misy ao anatin'ilay parametre ve ilay izy
+
+            Enumeration<String> attribs = request.getParameterNames();
+
+            // Azo ny liste avy any
+            Object object = tr.getConstructor().newInstance();
+
+            for( Field f : fields ){
+                // Anontaniako ny field rehetra ve tafiditra ao anaty
+                if( this.contains(attribs ,  f.getName() ) ){
+                    // Raha misy ilay attributs de Alaivo ny setter mifanaraka aminy
+                    Method m = tr.getMethod( ClassUtility.getSetter( f ) , f.getType() );
+                    Object o = request.getParameter(f.getName());
+                    o = ClassUtility.cast( o );
+                    m.invoke( object , o );
+                }
+            }
+
 //            Azo ilay class de alaina le methode
             Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
 //            Azo ilay methode de executena fotsiny
-            Object res =  method.invoke(tr.getConstructor().newInstance(), (Object[]) null);
+            Object res =  method.invoke(object, (Object[]) null);
+
+            // Inona moa no atao ato
+            // Alaina daholo ny objet an'ilay Classe de asiana hoe raha mitovy amin'ito de tazomy
 
             if( res instanceof ModelView ){
                 ModelView view = (ModelView) res;
@@ -75,6 +106,18 @@ public class FrontServlet extends HttpServlet {
         // Rehefa azo ilay url de aseho
 //        Rehefa aseho de alefa ily izy
         
+    }
+
+    private boolean contains( Enumeration<String> datas , String data ){
+        // Okey mahazo data
+        while( datas.hasMoreElements() ){
+            String e = datas.nextElement();
+            e = e.trim();
+            if( e.equalsIgnoreCase(data) ){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setDatas(HttpServletRequest request , HashMap<String , Object> data) throws Exception{

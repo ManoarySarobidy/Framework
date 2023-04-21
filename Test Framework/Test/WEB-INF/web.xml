@@ -12,12 +12,9 @@
     <servlet-mapping>
         <servlet-name>FrontServlet</servlet-name>
         <url-pattern>/</url-pattern>
+        <url-pattern>/css/*</url-pattern>
+        <url-pattern>/js/*</url-pattern>
     </servlet-mapping>
-    <!-- <servlet-mapping> -->
-        <!-- <servlet-name>FrontServlet</servlet-name> -->
-        <!-- <url-pattern>/[^.]*$</url-pattern> -->
-        <!-- <url-pattern>/*(?!\.jsp)</url-pattern> -->
-    <!-- </servlet-mapping> -->
     <session-config>
         <session-timeout>
             30

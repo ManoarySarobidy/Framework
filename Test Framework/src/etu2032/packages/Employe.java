@@ -27,7 +27,15 @@ public class Employe{
 		emps.add( new Employe("Sarobidy") );
 		emps.add( new Employe("Rodolphe") );
 		emps.add( new Employe("Fanilo") );
-		emps.add( new Employe("Rota") );
+		ModelView returns = new ModelView("employe.jsp");
+		returns.addItem("emp-list" , emps); 
+		return returns;
+	}
+
+	@Url( url = "/emp-add" )
+	public ModelView addEmp(  ){
+		Vector<Employe> emps = new Vector<Employe>();
+		emps.add( this );
 		ModelView returns = new ModelView("employe.jsp");
 		returns.addItem("emp-list" , emps); 
 		return returns;
