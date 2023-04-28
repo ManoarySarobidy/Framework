@@ -3,15 +3,30 @@ package etu2032.packages;
 import etu2032.framework.modelview.ModelView;
 
 import etu2032.framework.annotation.Url;
+import etu2032.framework.annotation.RequestParameter;
 import java.util.Vector;
 
 public class Employe{
 
 	String name;
+	Integer id;
 
 	public Employe(){}
 	public Employe(String name){
 		this.setName(name);
+		this.setId(500);
+	}
+	public Employe(String name , int id ){
+		this.setName(name);
+		this.setId(id);
+	}
+
+	public void setId( Integer id ){
+		this.id = id;
+	}
+
+	public Integer getId(){
+		return this.id;
 	}
 
 	public void setName(String n){
@@ -39,6 +54,27 @@ public class Employe{
 		ModelView returns = new ModelView("employe.jsp");
 		returns.addItem("emp-list" , emps); 
 		return returns;
+	}
+
+	@Url( url = "/find" )
+	public ModelView findById( @RequestParameter(name = "id" ) Integer id ){
+		Vector<Employe> emps = new Vector<Employe>();
+		emps.add( new Employe("Sarobidy" , 1) );
+		emps.add( new Employe("Sarobidy Manoary" , 2) );
+		emps.add( new Employe("Sarobidy 2" , 3) );
+		emps.add( new Employe("Sarobidy 3" , 4) );
+		emps.add( new Employe("Sarobidy 4" , 5) );
+
+		ModelView mv = new ModelView("Result.jsp");
+		Employe retour = null;
+		for( Employe e : emps ){
+			if( e.getId() == id ){
+				retour = e;
+				break;
+			}
+		}
+		mv.addItem("Employe" , retour);
+		return mv;
 	}
 
 }
