@@ -26,6 +26,14 @@
                         </div>
                     </div>
                     <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <label for="" class="form-label"> ID de l'employe </label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="text" name="id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
                         <input type="submit" value="Enregistrer">
                     </div>
                 </form>

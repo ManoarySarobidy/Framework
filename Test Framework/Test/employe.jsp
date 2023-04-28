@@ -25,6 +25,9 @@
 								<td>
 									<%= emp.getName() %>		
 								</td>
+								<td>
+									<%= emp.getId()%>
+								</td>
 							</tr>
 					<% } %>
 				</tbody>

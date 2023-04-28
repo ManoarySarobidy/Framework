@@ -54,22 +54,22 @@ public class ClassUtility {
     }
 
     public static Object cast( Parameter parameter, String toCast ){
-        if( parameter.getType() == int.class ){
+        if( parameter.getType() == Integer.class ){
             return Integer.parseInt(toCast);
-        }else if( parameter.getType() == double.class ){
+        }else if( parameter.getType() == Double.class ){
             return Double.parseDouble(toCast);
-        }else if( parameter.getType() == boolean.class ){
+        }else if( parameter.getType() == Boolean.class ){
             return Boolean.parseBoolean(toCast);
         }
         return toCast;
     }
-    public static Object cast( Object object ){
-        if( object.getClass() == Integer.TYPE ){
-            return Integer.parseInt(String.valueOf(object));
-        }else if( object.getClass() == Double.TYPE){
-            return Double.parseDouble(String.valueOf(object));
-        }else if( object.getClass() == Boolean.TYPE){
-            return Boolean.parseBoolean(String.valueOf(object));
+    public static Object cast( Object object , Class<?> type ){
+        if( type == Integer.class ){
+            return Integer.valueOf(String.valueOf(object));
+        }else if( type == Double.class){
+            return Double.valueOf(String.valueOf(object));
+        }else if( type == Boolean.class){
+            return Boolean.valueOf(String.valueOf(object));
         }
         return object;
     }

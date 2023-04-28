@@ -5,6 +5,7 @@
 package etu2032.framework.servlet;
 
 import etu2032.framework.Mapping;
+import etu2032.framework.annotation.RequestParameter;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.ClassUtility;
@@ -16,10 +17,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -57,30 +61,57 @@ public class FrontServlet extends HttpServlet {
 
             Field[] fields = tr.getDeclaredFields();
 
-            // Azo ny fields tao
-
-            // Mila manontany avy eo hoe misy ao anatin'ilay parametre ve ilay izy
-
+            Method[] methods = tr.getDeclaredMethods();
+            String methodName = urls.getMethod();
+            Method willBeinvoked = null;
+            Object[] params = null;
             Enumeration<String> attribs = request.getParameterNames();
-
-            // Azo ny liste avy any
-            Object object = tr.getConstructor().newInstance();
-
-            for( Field f : fields ){
-                // Anontaniako ny field rehetra ve tafiditra ao anaty
-                if( this.contains(attribs ,  f.getName() ) ){
-                    // Raha misy ilay attributs de Alaivo ny setter mifanaraka aminy
-                    Method m = tr.getMethod( ClassUtility.getSetter( f ) , f.getType() );
-                    Object o = request.getParameter(f.getName());
-                    o = ClassUtility.cast( o );
-                    m.invoke( object , o );
+            List<String> att = Collections.list(attribs);
+            for( Method m : methods){
+                boolean isPresent = m.isAnnotationPresent( Url.class ) && ( ((Url)m.getAnnotation(Url.class)).url().equals(url) );
+                if( m.getName().equals(methodName) && isPresent){
+                    willBeinvoked = m;
+                    break;
                 }
             }
 
+            if( willBeinvoked != null ){
+                Parameter[] parameters = null;
+                parameters = willBeinvoked.getParameters();
+                params = ( parameters.length == 0 ) ? null : new Object[parameters.length];
+                int size = parameters.length;
+                out.println("Tafiditra ato");
+                // Alaina daholo ny object rehetra
+                for( int i = 0 ; i < size ; i++ ){
+                    Parameter pa = parameters[i];
+                    if( pa.isAnnotationPresent(RequestParameter.class) ){
+                        RequestParameter para = pa.getAnnotation(RequestParameter.class);
+                        if( this.contains( att , para.name() ) ){
+                            Object p = request.getParameter(para.name());
+                            p = ClassUtility.cast(pa , String.valueOf(p));
+                            params[i] = p;
+                        }
+                    }
+                }
+            }
+            // Azo ny liste avy any
+            Object object = tr.getConstructor().newInstance();
+
+            out.println(Arrays.toString(params));
+
+            for( Field f : fields ){
+                if( this.contains(att ,  f.getName() ) ){
+                    // Raha misy ilay attributs de Alaivo ny setter mifanaraka aminy
+                    Method m = tr.getMethod( ClassUtility.getSetter( f ) , f.getType() );
+                    Object o = request.getParameter(f.getName());
+                    o = ClassUtility.cast( o , f.getType());
+                    m.invoke( object , o );
+                }
+            }
 //            Azo ilay class de alaina le methode
-            Method method = tr.getDeclaredMethod(urls.getMethod(), (Class[]) null);
+            Method method = willBeinvoked;
 //            Azo ilay methode de executena fotsiny
-            Object res =  method.invoke(object, (Object[]) null);
+            Object res =  method.invoke(object,  params);
 
             // Inona moa no atao ato
             // Alaina daholo ny objet an'ilay Classe de asiana hoe raha mitovy amin'ito de tazomy
@@ -100,6 +131,7 @@ public class FrontServlet extends HttpServlet {
         } catch(Exception e){
             e.printStackTrace(out);
         }
+
         // Rehefa azo ilay url de aseho
 //        Rehefa aseho de alefa ily izy
         
@@ -108,10 +140,10 @@ public class FrontServlet extends HttpServlet {
         
     }
 
-    private boolean contains( Enumeration<String> datas , String data ){
+    private boolean contains( List<String> datas , String data ){
         // Okey mahazo data
-        while( datas.hasMoreElements() ){
-            String e = datas.nextElement();
+        for(String e : datas){
+            // String e = datas.nextElement();
             e = e.trim();
             if( e.equalsIgnoreCase(data) ){
                 return true;
