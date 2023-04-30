@@ -10,34 +10,34 @@
 - It will map it to a link that your browser and Front servlet can access
     - Example :
         ```Java
-            @Url( name = "/your_link" )\
+            @Url( name = "/your_link" )
             public ModelView function_name(){}
         ```
 
 - You can set the view in which you want to be redirected by setting it in the ModelView that you will return
     - Example :
-        <code>
+        ```Java
             ...  
                 ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");  
             ...
-        </code>
+        ```
 
 - You can also add Data to it by using the addItem function in the model view
     - Example :
-        <code>
-            ...\
+        ```Java
+            ...
                 ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");\
                 mv.addItem("A_name_for_your_data" , your_data);\
                 return mv;\
             ...
-        </code> 
+        ```
 
 - You can also pass a parameter in the function but ** You must ** add the @RequestParameter() annotation from the etu2032.framework.annotation  to it
     - Example :
-        <code> 
+        ```Java
             @Url( name = "/your_link")
             public ModelView function_name( @RequestParameter( name = "Name_of_the_parameter_you_have_send" ) Integer id )
-        </code>
+        ```
 
 ## Some Constraints
 1. Don't use a primitive like int,double,bool...,short but Use Class Instead like Integer , Boolean, Double, ... for the class field and the function parameter
