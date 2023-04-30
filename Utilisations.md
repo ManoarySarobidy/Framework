@@ -44,7 +44,7 @@
 2. When Sending a Form data make sure that the class field name is the same as the name that you put in the input of the form
    -   Example :
         - In the class
-            ```java
+            ```Java
                 ....
                     Integer id;
                 ....
