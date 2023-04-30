@@ -26,9 +26,9 @@
     - Example :
         ```Java
             ...
-                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");\
-                mv.addItem("A_name_for_your_data" , your_data);\
-                return mv;\
+                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
+                mv.addItem("A_name_for_your_data" , your_data);
+                return mv;
             ...
         ```
 
@@ -44,16 +44,16 @@
 2. When Sending a Form data make sure that the class field name is the same as the name that you put in the input of the form
    -   Example :
         - In the class
-            <code>
+            ```java
                 ....
                     Integer id;
                 ....
-            </code>
+            ```
         - In the form field
-            <code>
+            ```html
                 ...
-                    input type="text" name="id"                ...
-            </code>
+                    <input type="text" name="id" >               ...
+            ```
 3. It doesn't actually support Css so please bear with it
 
 ## Some Helps
