@@ -9,25 +9,25 @@
 - It will map it to a link that your browser and Front servlet can access
     - Example :
         <code>
-            @Url( name = "/your_link" )
+            @Url( name = "/your_link" )\
             public ModelView function_name(){}
         </code>
 
 - You can set the view in which you want to be redirected by setting it in the ModelView that you will return
     - Example :
         <code>
-            ...  
-                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");  
+            ...\
+                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");\
             ...
         </code>
 
 - You can also add Data to it by using the addItem function in the model view
     - Example :
         <code>
-            ...  
-                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
-                mv.addItem("A_name_for_your_data" , your_data);
-                return mv;  
+            ...\
+                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");\
+                mv.addItem("A_name_for_your_data" , your_data);\
+                return mv;\
             ...
         </code> 
 
