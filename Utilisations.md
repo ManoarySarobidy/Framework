@@ -1,7 +1,8 @@
 
 ## How To use It :
 - You need to import the packages :
-    - etu2032.framework.modelview : It contains the ModelView class package
+    - etu2032.framework.modelview : 
+  It contains the ModelView class package
     - etu2032.framework.annotation  
 
 - All of your functions except Getter/Setter/Constructor must return a ModelView Class that is already in the framework
@@ -16,8 +17,10 @@
 - You can set the view in which you want to be redirected by setting it in the ModelView that you will return
     - Example :
         <code>
-            ...\
-                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");\
+            ...  
+
+                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");  
+
             ...
         </code>
 
