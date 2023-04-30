@@ -16,9 +16,8 @@
 - You can set the view in which you want to be redirected by setting it in the ModelView that you will return
     - Example :
         <code>
-            ... <br>
-                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
-                <br>
+            ...  
+                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");  
             ...
         </code>
 
@@ -26,9 +25,9 @@
     - Example :
         <code>
             ...  
-                    ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
-                    mv.addItem("A_name_for_your_data" , your_data);
-                    return mv;  
+                ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
+                mv.addItem("A_name_for_your_data" , your_data);
+                return mv;  
             ...
         </code> 
 
