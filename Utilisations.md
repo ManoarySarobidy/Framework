@@ -25,12 +25,12 @@
 - You can also add Data to it by using the addItem function in the model view
     - Example :
         <code>
-            ... 
-                <br>
+            ...  
+                
                     ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
                     mv.addItem("A_name_for_your_data" , your_data);
                     return mv;
-                <br>
+               
             ...
         </code> 
 
@@ -54,8 +54,7 @@
         - In the form field
             <code>
                 ...
-                    "<input type="text" name="id">"
-                ...
+                    input type="text" name="id"                ...
             </code>
 3. It doesn't actually support Css so please bear with it
 
