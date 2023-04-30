@@ -18,7 +18,6 @@
     - Example :
         <code>
             ...  
-
                 ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");  
             ...
         </code>
