@@ -26,11 +26,9 @@
     - Example :
         <code>
             ...  
-                
                     ModelView mv = new ModelView("The_path_to_your_jsp_file.jsp");
                     mv.addItem("A_name_for_your_data" , your_data);
-                    return mv;
-               
+                    return mv;  
             ...
         </code> 
 
