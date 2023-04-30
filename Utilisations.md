@@ -9,10 +9,10 @@
 - Also your function must be annoted with the @Url annotation in the etu2032.framework.annotation
 - It will map it to a link that your browser and Front servlet can access
     - Example :
-        <code>
+        ```Java
             @Url( name = "/your_link" )\
             public ModelView function_name(){}
-        </code>
+        ```
 
 - You can set the view in which you want to be redirected by setting it in the ModelView that you will return
     - Example :
