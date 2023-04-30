@@ -1,5 +1,5 @@
 ## Instructions for how to setup the frameworks 
-1- First make sure that you have put the <b> Jar </b> path to your system CLASSPATH variable
+1. First make sure that you have put the <b> Jar </b> path to your system CLASSPATH variable
   - How to do it :
     - For Windows users:
         - Press the key with Windows Logo
@@ -32,8 +32,8 @@
           - If You are in Bash :
             - <code> source ~/.basjrc </code>
 
-2- Import the framework to your web-app project by placing it in the WEB-INF/lib/ folder of your web app root directory
-3- All classes must be placed in one package
+2. Import the framework to your web-app project by placing it in the WEB-INF/lib/ folder of your web app root directory
+3. All classes must be placed in one package
       - Like If there is 5 model classes : They must be under the same package
       - Like "com.mymodels"
     - The package must be writed in the web.xml file
