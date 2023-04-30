@@ -1,5 +1,5 @@
 ## Instructions for how to setup the frameworks 
-1 - First make sure that you have put the <b> Jar </b> path to your system CLASSPATH variable
+1- First make sure that you have put the <b> Jar </b> path to your system CLASSPATH variable
   - How to do it :
     - For Windows users:
         - Press the key with Windows Logo
@@ -32,4 +32,21 @@
           - If You are in Bash :
             - <code> source ~/.basjrc </code>
 
-2 - Import the framework to your web-app project by placing it in the WEB-INF/lib/ folder of your web app root directory
+2- Import the framework to your web-app project by placing it in the WEB-INF/lib/ folder of your web app root directory
+3- All classes must be placed in one package
+      - Like If there is 5 model classes : They must be under the same package
+      - Like "com.mymodels"
+    - The package must be writed in the web.xml file
+    - In the web.xml you must include the front servlet class as the main servlet which is : <b> etu2032.framework.servlet.FrontServlet     </b> and set to init parameter the name of your packages with the name "packages"
+      - Example :
+            <code>
+                <servlet>
+                    <servlet-name>TheNameYouLike</servlet-name>
+                    <servlet-class>etu2032.framework.servlet.FrontServlet</>
+                    <init-param>
+                        <param-name>packages</param-name>
+                        <param-value>YourPackageName</param-value>
+                    </init-param>
+                </servlet>
+            </code>
+    - Then send all links to the front servlet by mapping the servlet to "/"
