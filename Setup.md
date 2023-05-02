@@ -15,22 +15,38 @@
     - For Linux Users :
       - First, open a terminal 
       - Check which terminal you use by using : 
-      - <code> echo $0 </code>
+        ``` Bash
+          echo $0 
+        ```
         - If you are using szh , then use the command :
-        - <code> sudo nano ~/.zshrc </code>
+            ```Bash 
+              sudo nano ~/.zshrc 
+            ```
         - If you are using bash, then use the command :
-        - <code> sudo nano ~/.bashrc </code>
+        ```Bash 
+          sudo nano ~/.bashrc 
+        ```
       - After opening one of the file
       - Append to the end of the file the following code :
-      - <code> CLASSPATH=$CLASSPATH:Path_to_the_jar_framework </code>
-      - <code> export CLASSPATH </code>
+        ```Bash
+          CLASSPATH=$CLASSPATH:Path_to_the_jar_framework 
+        ```
+      ```Bash 
+          export CLASSPATH 
+        ```
       - Then quit the nano editor by pressing 
-      - <code> CTRL + X </code>
+      ```Bash
+          CTRL + X 
+        ```
       - Then :
           - If you are in zsh :
-            - <code> source ~/.zshrc </code>
+            ```Bash 
+              source ~/.zshrc 
+            ```
           - If You are in Bash :
-            - <code> source ~/.basjrc </code>
+            ```Bash 
+              source ~/.basjrc 
+            ```
 
 2. Import the framework to your web-app project by placing it in the WEB-INF/lib/ folder of your web app root directory
 3. All classes must be placed in one package
@@ -42,7 +58,7 @@
             ```Xml
                 <servlet>
                     <servlet-name>TheNameYouLike</servlet-name>
-                    <servlet-class>etu2032.framework.servlet.FrontServlet</>
+                    <servlet-class>etu2032.framework.servlet.FrontServlet</servlet-class>
                     <init-param>
                         <param-name>packages</param-name>
                         <param-value>YourPackageName</param-value>
@@ -50,3 +66,5 @@
                 </servlet>
             ```
     - Then send all links to the front servlet by mapping the servlet to "/"
+
+4. You need Java 8 and later and Use the servlet-api.jar
