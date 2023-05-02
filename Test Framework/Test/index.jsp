@@ -34,6 +34,14 @@
                         </div>
                     </div>
                     <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <label for="" class="form-label"> Date d'admission </label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="date" name="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
                         <input type="submit" value="Enregistrer">
                     </div>
                 </form>

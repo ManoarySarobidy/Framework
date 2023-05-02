@@ -80,7 +80,7 @@ public class FrontServlet extends HttpServlet {
                 parameters = willBeinvoked.getParameters();
                 params = ( parameters.length == 0 ) ? null : new Object[parameters.length];
                 int size = parameters.length;
-                out.println("Tafiditra ato");
+                // out.println("Tafiditra ato");
                 // Alaina daholo ny object rehetra
                 for( int i = 0 ; i < size ; i++ ){
                     Parameter pa = parameters[i];
@@ -104,7 +104,7 @@ public class FrontServlet extends HttpServlet {
                     // Raha misy ilay attributs de Alaivo ny setter mifanaraka aminy
                     Method m = tr.getMethod( ClassUtility.getSetter( f ) , f.getType() );
                     Object o = request.getParameter(f.getName());
-                    o = ClassUtility.cast( o , f.getType());
+                    o = ClassUtility.cast( o , f.getType() );
                     m.invoke( object , o );
                 }
             }

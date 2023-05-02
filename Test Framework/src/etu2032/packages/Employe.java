@@ -5,11 +5,13 @@ import etu2032.framework.modelview.ModelView;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.annotation.RequestParameter;
 import java.util.Vector;
+import java.sql.Date;
 
 public class Employe{
 
 	String name;
 	Integer id;
+	Date date;
 
 	public Employe(){}
 	public Employe(String name){
@@ -34,6 +36,13 @@ public class Employe{
 	}
 	public String getName(){
 		return this.name;
+	}
+
+	public void setDate( Date e ){
+		this.date = e;
+	}
+	public Date getDate(){
+		return this.date;
 	}
 
 	@Url( url="/emp-index" )

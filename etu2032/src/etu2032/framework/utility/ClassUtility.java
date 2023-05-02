@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
+import java.text.SimpleDateFormat;
+
 /**
  *
  * @author sarobidy
@@ -53,7 +55,7 @@ public class ClassUtility {
         return methodName;
     }
 
-    public static Object cast( Parameter parameter, String toCast ){
+    public static Object cast( Parameter parameter, String toCast ) throws Exception{
         if( parameter.getType() == Integer.class ){
             return Integer.parseInt(toCast);
         }else if( parameter.getType() == Double.class ){
@@ -61,15 +63,39 @@ public class ClassUtility {
         }else if( parameter.getType() == Boolean.class ){
             return Boolean.parseBoolean(toCast);
         }
+        try{
+            return ClassUtility.castDate(toCast, parameter.getType());
+        }catch(Exception e){
+        }
         return toCast;
     }
-    public static Object cast( Object object , Class<?> type ){
+
+    private static Object castDate( String date , Class<?> field) throws Exception{
+        if( field == java.util.Date.class ){
+            java.util.Date v = new SimpleDateFormat("YYYY-MM-DD").parse(date);
+            return v;
+
+        }else if( field == java.sql.Date.class ){
+            return java.sql.Date.valueOf(date);
+        }
+        throw new Exception("Not a date");
+    }
+
+    public static Object cast( Object object , Class<?> type ) throws Exception{
         if( type == Integer.class ){
             return Integer.valueOf(String.valueOf(object));
         }else if( type == Double.class){
             return Double.valueOf(String.valueOf(object));
         }else if( type == Boolean.class){
             return Boolean.valueOf(String.valueOf(object));
+        }
+        try{
+            return ClassUtility.castDate( String.valueOf(object) , type );
+            // if( e == null ){
+            //     throw new Exception("Date");
+            // }
+        }catch(Exception e){
+
         }
         return object;
     }
