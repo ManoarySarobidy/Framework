@@ -84,14 +84,15 @@ public class FrontServlet extends HttpServlet {
                 // Alaina daholo ny object rehetra
                 for( int i = 0 ; i < size ; i++ ){
                     Parameter pa = parameters[i];
-                    if( pa.isAnnotationPresent(RequestParameter.class) ){
-                        RequestParameter para = pa.getAnnotation(RequestParameter.class);
-                        if( this.contains( att , para.name() ) ){
-                            Object p = request.getParameter(para.name());
+                    out.println(pa.getName());
+                    // if( pa.isAnnotationPresent(RequestParameter.class) ){
+                        // RequestParameter para = pa.getAnnotation(RequestParameter.class);
+                        if( this.contains( att , pa.getName() ) ){
+                            Object p = request.getParameter(pa.getName());
                             p = ClassUtility.cast(pa , String.valueOf(p));
                             params[i] = p;
                         }
-                    }
+                    // }
                 }
             }
             // Azo ny liste avy any
