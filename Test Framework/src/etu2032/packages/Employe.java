@@ -66,7 +66,8 @@ public class Employe{
 	}
 
 	@Url( url = "/find" )
-	public ModelView findById( @RequestParameter(name = "id" ) Integer id ){
+	// public ModelView findById( @RequestParameter(name = "id" ) Integer id ){
+	public ModelView findById( Integer id ){
 		Vector<Employe> emps = new Vector<Employe>();
 		emps.add( new Employe("Sarobidy" , 1) );
 		emps.add( new Employe("Sarobidy Manoary" , 2) );

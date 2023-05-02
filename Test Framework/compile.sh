@@ -6,6 +6,6 @@ do
 	cp "$FILE" "./src" # Copiena eo ivelany ny . java rehetra
 done
 
-javac -cp "./Test/WEB-INF/lib/framework.jar" -d ./Test/WEB-INF/classes "./src/"*.java
+javac -cp "./Test/WEB-INF/lib/framework.jar" -parameters -d ./Test/WEB-INF/classes "./src/"*.java
 
 rm "./src/"*.java
