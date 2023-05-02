@@ -55,7 +55,7 @@
     - The package must be writed in the web.xml file
     - In the web.xml you must include the front servlet class as the main servlet which is : <b> etu2032.framework.servlet.FrontServlet     </b> and set to init parameter the name of your packages with the name "packages"
       - Example :
-            ```Xml
+            ```xml
                 <servlet>
                     <servlet-name>TheNameYouLike</servlet-name>
                     <servlet-class>etu2032.framework.servlet.FrontServlet</servlet-class>
