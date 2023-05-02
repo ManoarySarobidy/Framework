@@ -17,6 +17,8 @@
 			<table class="table">
 				<thead>
 					<th>Nom de l'employe</th>
+					<th>Id de l'employe</th>
+					<th>Date d'admission</th>
 				</thead>
 				<tbody>
 					<%
@@ -27,6 +29,9 @@
 								</td>
 								<td>
 									<%= emp.getId()%>
+								</td>
+								<td>
+									<%= emp.getDate()%>
 								</td>
 							</tr>
 					<% } %>
