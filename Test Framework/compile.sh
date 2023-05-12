@@ -8,4 +8,5 @@ done
 
 javac -cp "$1/test.jar" -d $2 "./src/"*.java
 
+
 rm "./src/"*.java
