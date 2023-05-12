@@ -59,7 +59,7 @@
                 <servlet>
                     <servlet-name>TheNameYouLike</servlet-name>
                     <servlet-class>etu2032.framework.servlet.FrontServlet</servlet-class>
-                    <init-param>
+                    <init-param>  
                         <param-name>packages</param-name>
                         <param-value>YourPackageName</param-value>
                     </init-param>
