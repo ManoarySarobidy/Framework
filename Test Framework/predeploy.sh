@@ -18,7 +18,9 @@ makeFolders
 cp -R "./lib/"* $LIBS
 ./compile.sh $LIBS $CLASSES
 cp  "./"*.jsp $TEMP
-
+cp  "./"*.xml $WEBINF
+cd $TEMP
 jar -cf $1.war $TEMP
-
+cp $1.war ..
+rm -R $TEMP
 # Copiena any anaty TOMCAT AMIN'IZAY

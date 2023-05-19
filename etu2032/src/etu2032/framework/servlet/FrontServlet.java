@@ -80,8 +80,6 @@ public class FrontServlet extends HttpServlet {
                 parameters = willBeinvoked.getParameters();
                 params = ( parameters.length == 0 ) ? null : new Object[parameters.length];
                 int size = parameters.length;
-                // out.println("Tafiditra ato");
-                // Alaina daholo ny object rehetra
                 for( int i = 0 ; i < size ; i++ ){
                     Parameter pa = parameters[i];
                     out.println(pa.getName());
@@ -107,6 +105,7 @@ public class FrontServlet extends HttpServlet {
                     Object o = request.getParameter(f.getName());
                     o = ClassUtility.cast( o , f.getType() );
                     m.invoke( object , o );
+                    // Tokony hoe raha manana instance ana FileUpload ilay izay de amoronana
                 }
             }
 //            Azo ilay class de alaina le methode
