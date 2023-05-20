@@ -49,6 +49,13 @@
                             <input type="file" name="badge" id="">
                         </div>
                     </div>
+                    <div class="days">
+                        <input type="checkbox" name="days[]" value="lundi">
+                        <input type="checkbox" name="days[]" value="mardi">
+                        <input type="checkbox" name="days[]" value="mercredi">
+                        <input type="checkbox" name="days[]" value="jeudi">
+                        <input type="checkbox" name="days[]" value="vendredi">
+                    </div>
                     <div class="row mb-3">
                         <input type="submit" value="Enregistrer">
                     </div>

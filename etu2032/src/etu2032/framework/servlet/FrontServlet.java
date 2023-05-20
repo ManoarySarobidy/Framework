@@ -61,8 +61,9 @@ public class FrontServlet extends HttpServlet {
                     Parameter pa = parameters[i];
                     if( pa.isAnnotationPresent(RequestParameter.class) ){
                         RequestParameter para = pa.getAnnotation(RequestParameter.class);
-                        if( this.contains( att , para.name() ) ){
-                            Object p = request.getParameter(para.name());
+                        String name = (( pa.getType().isArray() ) ? para.name() + "[]" : para.name() );
+                        if( this.contains( att , name ) ){
+                            Object p = ( pa.getType().isArray() ) ? request.getParameterValues( name ) : request.getParameter( name );
                             p = ClassUtility.cast(pa , String.valueOf(p));
                             params[i] = p;
                         }
@@ -70,10 +71,12 @@ public class FrontServlet extends HttpServlet {
                 }
             }
             Object object = tr.getConstructor().newInstance();
+            out.println(att);
             for( Field f : fields ){
-                if( this.contains(att ,  f.getName() ) ){
+                String name = (( f.getType().isArray() ) ? f.getName() + "[]" : f.getName() );
+                if( this.contains(att ,   name) ){
                     Method m = tr.getMethod( ClassUtility.getSetter( f ) , f.getType() );
-                    Object o = request.getParameter(f.getName());
+                    Object o = ( f.getType().isArray() ) ? request.getParameterValues( name ) : request.getParameter(name);
                     o = ClassUtility.cast( o , f.getType() );
                     m.invoke( object , o );
                 }

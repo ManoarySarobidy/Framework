@@ -12,7 +12,16 @@ public class Employe{
 	String name;
 	Integer id;
 	Date date;
+	String[] days;
 	FileUpload badge;
+
+	public void setDays(String[] days){
+		this.days = days;
+	}
+
+	public String[] getDays(){
+		return this.days;
+	}
 
 	public Employe(){}
 	public Employe(String name){
