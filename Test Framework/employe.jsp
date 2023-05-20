@@ -41,6 +41,15 @@
 								<td>
 									<%= emp.getBadge().getBytes().length%>
 								</td>
+								<td>
+									<ul>
+										<%
+											for( String day: emp.getDays() ){ %>
+												<li><%= day %></li>
+										<% } %>
+										
+									</ul>
+								</td>
 							</tr>
 					<% } %>
 				</tbody>
