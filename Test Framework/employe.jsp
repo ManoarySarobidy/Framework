@@ -19,6 +19,8 @@
 					<th>Nom de l'employe</th>
 					<th>Id de l'employe</th>
 					<th>Date d'admission</th>
+					<th>Badge</th>
+					<th>Taille du Badge</th>
 				</thead>
 				<tbody>
 					<%
@@ -32,6 +34,12 @@
 								</td>
 								<td>
 									<%= emp.getDate()%>
+								</td>
+								<td>
+									<%= emp.getBadge().getName()%>
+								</td>
+								<td>
+									<%= emp.getBadge().getBytes().length%>
 								</td>
 							</tr>
 					<% } %>

@@ -1,7 +1,7 @@
 package etu2032.packages;
 
 import etu2032.framework.modelview.ModelView;
-
+import etu2032.framework.utility.FileUpload;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.annotation.RequestParameter;
 import java.util.Vector;
@@ -12,6 +12,7 @@ public class Employe{
 	String name;
 	Integer id;
 	Date date;
+	FileUpload badge;
 
 	public Employe(){}
 	public Employe(String name){
@@ -21,6 +22,14 @@ public class Employe{
 	public Employe(String name , int id ){
 		this.setName(name);
 		this.setId(id);
+	}
+
+	public void setBadge(FileUpload upload){
+		this.badge = upload;
+	}
+
+	public FileUpload getBadge(){
+		return this.badge;
 	}
 
 	public void setId( Integer id ){
@@ -66,8 +75,8 @@ public class Employe{
 	}
 
 	@Url( url = "/find" )
-	// public ModelView findById( @RequestParameter(name = "id" ) Integer id ){
-	public ModelView findById( Integer id ){
+	public ModelView findById( @RequestParameter(name = "id" ) Integer id ){
+	// public ModelView findById( Integer id ){
 		Vector<Employe> emps = new Vector<Employe>();
 		emps.add( new Employe("Sarobidy" , 1) );
 		emps.add( new Employe("Sarobidy Manoary" , 2) );

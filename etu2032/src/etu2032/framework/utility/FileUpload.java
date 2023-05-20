@@ -12,7 +12,7 @@ public class FileUpload {
 	public void setName(String name){
 		this.name = name;
 	}
-	public Stirng getName(){
+	public String getName(){
 		return this.name;
 	}
 
@@ -29,6 +29,10 @@ public class FileUpload {
 	}
 	public byte[] getBytes(){
 		return this.bytes;
+	}
+
+	public String toString(){
+		return this.getName() + " [ " + this.getBytes().length + " ]";
 	}
 
 }

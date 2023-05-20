@@ -16,7 +16,7 @@
                 </h2>
             </div>
             <div class="row">
-                <form action="emp-add" method="POST" class="for">
+                <form action="emp-add" method="POST" class="for" enctype="multipart/form-data">
                     <div class="row mb-3">
                         <div class="col-lg-4">
                             <label for="" class="form-label"> Nom de l'employe </label>
@@ -39,6 +39,14 @@
                         </div>
                         <div class="col-lg-5">
                             <input type="date" name="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <label for="" class="form-label"> Badge </label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="file" name="badge" id="">
                         </div>
                     </div>
                     <div class="row mb-3">

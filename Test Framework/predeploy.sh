@@ -20,7 +20,9 @@ cp -R "./lib/"* $LIBS
 cp  "./"*.jsp $TEMP
 cp  "./"*.xml $WEBINF
 cd $TEMP
-jar -cf $1.war $TEMP
-cp $1.war ..
+jar -cf $1.war .
+cd ..
+cp $TEMP/$1.war .
+# pwd
 rm -R $TEMP
 # Copiena any anaty TOMCAT AMIN'IZAY
