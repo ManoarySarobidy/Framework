@@ -23,12 +23,12 @@ public class ClassUtility {
 //          BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 //          return reader.lines().filter(line->line.endsWith(".class")).map(line->getClass(line ,packages)).collect(Collectors.toSet());
 //    }
-    public static List<Class> getClassFrom(String  packages) throws Exception{
+    public static List<Class<?>> getClassFrom(String  packages) throws Exception{
             String path = packages.replaceAll("[.]", "/");
             URL packageUrl = Thread.currentThread().getContextClassLoader().getResource(path);
             File packDir =new File(packageUrl.toURI());
             File[] inside = packDir.listFiles(file->file.getName().endsWith(".class"));
-            List<Class> lists = new ArrayList<>();
+            List<Class<?>> lists = new ArrayList<>();
             for(File f : inside){
                    String c = packages+"."+f.getName().substring(0,f.getName().lastIndexOf("."));
                    lists.add(Class.forName(c));
@@ -36,7 +36,7 @@ public class ClassUtility {
             return lists;
     }
     
-    private static Class getClass(String className , String packages ){
+    private static Class<?> getClass(String className , String packages ){
         try{
             return Class.forName(packages+"."+className.substring(0,className.lastIndexOf('.')));
         }catch(ClassNotFoundException e){

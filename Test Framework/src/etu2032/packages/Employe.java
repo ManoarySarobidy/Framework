@@ -1,5 +1,6 @@
 package etu2032.packages;
 
+import etu2032.framework.annotation.Scope;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.FileUpload;
 import etu2032.framework.annotation.Url;
@@ -7,6 +8,7 @@ import etu2032.framework.annotation.RequestParameter;
 import java.util.Vector;
 import java.sql.Date;
 
+@Scope( name = "Singleton" )
 public class Employe{
 
 	String name;
