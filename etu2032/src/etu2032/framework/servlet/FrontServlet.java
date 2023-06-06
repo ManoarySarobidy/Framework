@@ -33,6 +33,7 @@ public class FrontServlet extends HttpServlet {
     HashMap<String, Mapping> mappingUrl;
     HashMap<String, Object> singleton = new HashMap<String, Object>();
 
+    int appel = 0;
 // Process Request
 
     @SuppressWarnings("unchecked")
@@ -124,6 +125,7 @@ public class FrontServlet extends HttpServlet {
             Method method = willBeinvoked;
             Object res = method.invoke(object, params);
 
+            out.println( "Appel du servlet : " +  this.appel );
             if (res instanceof ModelView) {
                 ModelView view = (ModelView) res;
                 RequestDispatcher r = request.getRequestDispatcher(view.getView());
@@ -203,12 +205,14 @@ public class FrontServlet extends HttpServlet {
             // Traitena ilay izy
             Object instance = this.getSingletons().get(className);
             if( instance == null ){
+                appel++;
                 Object newInstance = Class.forName( className ).getConstructor().newInstance();
                 this.getSingletons().replace( className, null, newInstance );
                 instance = newInstance;
             }
             return instance;
         }
+        appel++;
         return Class.forName( className ).getConstructor().newInstance();
     }
 
@@ -261,6 +265,7 @@ public class FrontServlet extends HttpServlet {
         for (Map.Entry<String, Object> sets : data.entrySet()) {
             request.setAttribute(sets.getKey(), sets.getValue());
         }
+        // request.setAttribute(  );
     }
 
     public HashMap<String, Object> getSingletons() {
