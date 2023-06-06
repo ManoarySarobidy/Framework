@@ -45,15 +45,7 @@ public class FrontServlet extends HttpServlet {
         url = url.substring(request.getContextPath().length()).trim();
         this.displayUrls(url);
         try {
-            Mapping urls = this.getMappingUrl().get(url);
-
-            // Andao amin'izay ary
-
-            // Okey naka instance izy eto
-
-            // Inona ny atao manaraka
-            // Rehefa mi-set izy de apetraka izay hoe ahoana ilay izy zay
-            
+            Mapping urls = this.getMappingUrl().get(url);            
             Class<?> tr = Class.forName(urls.getClassName());
             Field[] fields = tr.getDeclaredFields();
             Method[] methods = tr.getDeclaredMethods();
@@ -116,12 +108,17 @@ public class FrontServlet extends HttpServlet {
                     if (f.getType() == etu2032.framework.utility.FileUpload.class) {
                         Method m = tr.getMethod(ClassUtility.getSetter(f), f.getType());
                         Object o = this.fileTraitement(files, f);
+                        if( tr.isAnnotationPresent(Scope.class) && tr.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
+                            Object e = null;
+                            m.invoke( object, e );
+                        }
                         m.invoke(object, o);
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             Method method = willBeinvoked;
             Object res = method.invoke(object, params);
 
