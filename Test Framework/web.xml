@@ -8,6 +8,14 @@
             <param-name>packages</param-name>
             <param-value>etu2032.packages</param-value>
         </init-param>
+        <init-param>
+            <param-name>sessionName</param-name>
+            <param-value>isConnected</param-value>
+        </init-param>
+        <init-param>
+            <param-name>sessionProfile</param-name>
+            <param-value>profil</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>FrontServlet</servlet-name>

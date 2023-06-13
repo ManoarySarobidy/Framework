@@ -5,9 +5,11 @@
 package etu2032.framework.servlet;
 
 import etu2032.framework.Mapping;
+import etu2032.framework.annotation.Auth;
 import etu2032.framework.annotation.RequestParameter;
 import etu2032.framework.annotation.Scope;
 import etu2032.framework.annotation.Url;
+import etu2032.framework.exception.AuthFailedException;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.ClassUtility;
 import etu2032.framework.utility.FileUpload;
@@ -30,6 +32,10 @@ public class FrontServlet extends HttpServlet {
     String MODEL_PATH;
     int BYTE_SIZE = 8192;
     PrintWriter out;
+
+    String session_name;
+    String session_profile;
+
     HashMap<String, Mapping> mappingUrl;
     HashMap<String, Object> singleton = new HashMap<String, Object>();
 
@@ -58,8 +64,7 @@ public class FrontServlet extends HttpServlet {
             
             List<String> att = Collections.list(request.getParameterNames());
             for (Method m : methods) {
-                boolean isPresent = m.isAnnotationPresent(Url.class)
-                        && (((Url) m.getAnnotation(Url.class)).url().equals(url));
+                boolean isPresent = m.isAnnotationPresent(Url.class) && (((Url) m.getAnnotation(Url.class)).url().equals(url));
                 if (m.getName().equals(methodName) && isPresent) {
                     willBeinvoked = m;
                     break;
@@ -68,6 +73,24 @@ public class FrontServlet extends HttpServlet {
 
             // For setting function parameters
             if (willBeinvoked != null) {
+
+                // Si hoe manana annotation ilay methode de atao ahoana
+                // Andao ary hoe andramana
+                // Raha manana authentification auth ilay méthode de anontaniana ny fandehany
+                // Raha ohatra ka hoe mitovy ilay izy de tsy atao inoninona
+
+                if( willBeinvoked.isAnnotationPresent(Auth.class) ){
+                    // Si présent de checkeko hoe connecte ve
+                    Auth auth = willBeinvoked.getAnnotation(Auth.class);
+                    Object sessionN = request.getSession().getAttribute(this.getSessionName());
+                    Object sessionP = request.getSession().getAttribute(this.getSessionProfile());
+
+                    if( sessionN == null || (sessionN != null  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
+                        throw new AuthFailedException("Sorry You can't access that url with your privileges : " + sessionP);
+                    }
+
+                }
+
                 Parameter[] parameters = willBeinvoked.getParameters();
                 params = (parameters.length == 0) ? null : new Object[parameters.length];
                 int size = parameters.length;
@@ -88,8 +111,6 @@ public class FrontServlet extends HttpServlet {
             for (Field f : fields) {
                 String name = ((f.getType().isArray()) ? f.getName() + "[]" : f.getName());
                 if (this.contains(att, name)) {
-                    
-                    // Mila anontaniana hoe singleton ve ianao
                     Method m = tr.getMethod(ClassUtility.getSetter(f), f.getType());
                     Object o = (f.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
                     o = ClassUtility.cast(o, f.getType());
@@ -122,12 +143,13 @@ public class FrontServlet extends HttpServlet {
             Method method = willBeinvoked;
             Object res = method.invoke(object, params);
 
-            out.println( "Appel du servlet : " +  this.appel );
             if (res instanceof ModelView) {
                 ModelView view = (ModelView) res;
                 RequestDispatcher r = request.getRequestDispatcher(view.getView());
                 HashMap<String, Object> data = view.getData();
+                HashMap<String, Object> sessions = view.getSession();
                 this.setDatas(request, data);
+                this.setSessions(request, sessions);
                 r.forward(request, response);
             }
 
@@ -230,6 +252,13 @@ public class FrontServlet extends HttpServlet {
         try {
             super.init();
             String packages = String.valueOf(getInitParameter("packages")); // Avadika dynamique fotsiny ito
+            
+            String auth_session = String.valueOf( getInitParameter("sessionName") );
+            String auth_profile = String.valueOf( getInitParameter("sessionProfile") );
+
+            this.setSessionName(auth_session);
+            this.setSessionProfile(auth_profile);
+
             this.setMappingUrl();
             List<Class<?>> cs = ClassUtility.getClassFrom(packages);
             for (Class<?> c : cs) {
@@ -258,9 +287,34 @@ public class FrontServlet extends HttpServlet {
 
 // getters and setters
 
+    private void setSessionName(String name){
+        this.session_name = name;
+    }
+
+    private void setSessionProfile(String name){
+        this.session_profile = name;
+    }
+
+
+    private String getSessionName(){
+        return this.session_name;
+    }
+
+
+    private String getSessionProfile(){
+        return this.session_profile;
+    }
+
     private void setDatas(HttpServletRequest request, HashMap<String, Object> data) throws Exception {
         for (Map.Entry<String, Object> sets : data.entrySet()) {
             request.setAttribute(sets.getKey(), sets.getValue());
+        }
+        // request.setAttribute(  );
+    }
+    private void setSessions(HttpServletRequest request, HashMap<String, Object> sessions) throws Exception {
+        HttpSession session = request.getSession();
+        for (Map.Entry<String, Object> sets : sessions.entrySet()) {
+            session.setAttribute(sets.getKey(), sets.getValue());
         }
         // request.setAttribute(  );
     }
