@@ -10,6 +10,7 @@ public class ModelView {
     
     String view;
     HashMap<String , Object> data;
+    HashMap<String , Object> sessions = new HashMap<String, Object>();
     
     public ModelView(){
         this.setData();
@@ -40,6 +41,17 @@ public class ModelView {
     
     public HashMap<String, Object> getData(){
         return this.data;
+    }
+
+    public void setSession( HashMap<String, Object> session ){
+        this.sessions = session;
+    }
+    public HashMap<String, Object> getSession(){
+        return this.sessions;
+    }
+
+    public void addSession( String name , Object value ){
+        this.getSession().put( name , value );
     }
     
 }

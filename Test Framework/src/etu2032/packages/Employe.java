@@ -3,6 +3,7 @@ package etu2032.packages;
 import etu2032.framework.annotation.Scope;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.FileUpload;
+import etu2032.framework.annotation.Auth;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.annotation.RequestParameter;
 import java.util.Vector;
@@ -76,6 +77,7 @@ public class Employe{
 		return returns;
 	}
 
+	@Auth( user = "super-admin" )
 	@Url( url = "/emp-add" )
 	public ModelView addEmp(  ){
 		Vector<Employe> emps = new Vector<Employe>();
