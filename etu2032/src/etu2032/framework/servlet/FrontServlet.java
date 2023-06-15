@@ -85,7 +85,7 @@ public class FrontServlet extends HttpServlet {
                     Object sessionN = request.getSession().getAttribute(this.getSessionName());
                     Object sessionP = request.getSession().getAttribute(this.getSessionProfile());
 
-                    if( sessionN == null || (sessionN != null  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
+                    if( sessionN == null || (sessionN != null && !auth.user().isEmpty()  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
                         throw new AuthFailedException("Sorry You can't access that url with your privileges : " + sessionP);
                     }
 
