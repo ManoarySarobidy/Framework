@@ -77,7 +77,7 @@ public class Employe{
 		return returns;
 	}
 
-	@Auth( user = "super-admin" )
+	@Auth()
 	@Url( url = "/emp-add" )
 	public ModelView addEmp(  ){
 		Vector<Employe> emps = new Vector<Employe>();
