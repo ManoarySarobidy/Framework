@@ -2,11 +2,13 @@ package etu2032.packages;
 
 import etu2032.framework.annotation.*;
 import etu2032.framework.modelview.ModelView;
+import java.util.HashMap;
 
 public class Login{
 
 	String logins;
 	String password;
+	HashMap<String, Object> sessions = new HashMap<String, Object>();
 
 	public Login(){
 
@@ -26,12 +28,20 @@ public class Login{
 		return this.password;
 	}
 
+	public void setSessions( HashMap<String, Object> sessions ){
+		this.sessions = sessions;
+	}
+	public HashMap<String, Object> getSessions(){
+		return this.sessions;
+	}
+
 	@Url( url="/login" )
 	public ModelView home(){
 		ModelView view = new ModelView("login.jsp");
 		return view;
 	}
 
+	@Session()
 	@Url( url = "/log")
 	public ModelView login(){
 		ModelView view = new ModelView();
@@ -44,6 +54,7 @@ public class Login{
 			v = "index.jsp";
 			view.addSession( "isConnected" , true );
 			view.addSession( "profil" , "super-admin" );
+			this.getSessions().put("User", "sarobidy");
 		}
 		view.setView(v);
 		return view;
