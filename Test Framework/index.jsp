@@ -12,7 +12,7 @@
         <div class="container">
             <div class="row">
                 <h2 class="text-center">
-                    HAHA Io
+                    User = <%= request.getSession().getAttribute("User") %>
                 </h2>
             </div>
             <div class="row">

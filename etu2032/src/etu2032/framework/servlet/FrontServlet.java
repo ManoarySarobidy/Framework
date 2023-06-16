@@ -8,6 +8,7 @@ import etu2032.framework.Mapping;
 import etu2032.framework.annotation.Auth;
 import etu2032.framework.annotation.RequestParameter;
 import etu2032.framework.annotation.Scope;
+import etu2032.framework.annotation.Session;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.exception.AuthFailedException;
 import etu2032.framework.modelview.ModelView;
@@ -24,6 +25,7 @@ import java.util.*;
  *
  * @author sarobidy
  */
+
 @MultipartConfig
 public class FrontServlet extends HttpServlet {
 
@@ -35,6 +37,8 @@ public class FrontServlet extends HttpServlet {
 
     String session_name;
     String session_profile;
+
+    String session_attribute;
 
     HashMap<String, Mapping> mappingUrl;
     HashMap<String, Object> singleton = new HashMap<String, Object>();
@@ -70,6 +74,7 @@ public class FrontServlet extends HttpServlet {
                     break;
                 }
             }
+            // request.getSession().setAttribute( "sarobidy", "origine" );
 
             // For setting function parameters
             if (willBeinvoked != null) {
@@ -141,7 +146,37 @@ public class FrontServlet extends HttpServlet {
             }
 
             Method method = willBeinvoked;
+
+            // 1 - Ask if session annotation exists
+            if( method.isAnnotationPresent(Session.class) ){
+                String sessionAttribute = "set" + "Sessions";
+                ArrayList<String> sessions = Collections.list(request.getSession().getAttributeNames());
+                HashMap<String, Object> sessionCopy = new HashMap<String, Object>();
+                for (String attribute : sessions) {
+                    Object value = request.getSession().getAttribute(attribute);
+                    sessionCopy.put( attribute , value );
+                }
+                Method sessionMethod = object.getClass().getDeclaredMethod(sessionAttribute, HashMap.class);
+                sessionMethod.invoke( object, sessionCopy );
+            }
+
             Object res = method.invoke(object, params);
+
+            if( method.isAnnotationPresent(Session.class) ){
+                String sessionAttribute = "get" + "Sessions";
+                Method sessionMethod = object.getClass().getDeclaredMethod(sessionAttribute);
+                HashMap<String, Object> sessions = (HashMap<String, Object>) sessionMethod.invoke( object );
+                for ( Map.Entry<String, Object> ob : sessions.entrySet() ) {
+                    // Tokony hoe raha navadikako null ilay izy de afaka fafana
+                    if( ob.getValue() == null ){
+                        request.getSession().remove( ob.getKey(), ob.getValue() );
+                    }else{
+                        request.getSession().setAttribute( ob.getKey() , ob.getValue() );
+                    }
+                }
+            }
+
+            // Re - get the value from the object
 
             if (res instanceof ModelView) {
                 ModelView view = (ModelView) res;
@@ -250,16 +285,20 @@ public class FrontServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
+
             super.init();
-            String packages = String.valueOf(getInitParameter("packages")); // Avadika dynamique fotsiny ito
+            String packages = String.valueOf(this.getInitParameter("packages")); // Avadika dynamique fotsiny ito
             
-            String auth_session = String.valueOf( getInitParameter("sessionName") );
-            String auth_profile = String.valueOf( getInitParameter("sessionProfile") );
+            String auth_session = String.valueOf( this.getInitParameter("sessionName") );
+            String auth_profile = String.valueOf( this.getInitParameter("sessionProfile") );
+            String sess_var = String.valueOf( this.getInitParameter("sessionAttribute") );
 
             this.setSessionName(auth_session);
             this.setSessionProfile(auth_profile);
+            this.setSessionAttribute(sess_var);
 
             this.setMappingUrl();
+
             List<Class<?>> cs = ClassUtility.getClassFrom(packages);
             for (Class<?> c : cs) {
                 Method[] methods = c.getDeclaredMethods();
@@ -271,7 +310,6 @@ public class FrontServlet extends HttpServlet {
                             this.getMappingUrl().put(url.url(), map);
                         }
                     }
-
                     // Eto no manampy azy
                 }
                 // Si la classe contient l'annotation Scope et a comme nom singleton
@@ -341,6 +379,13 @@ public class FrontServlet extends HttpServlet {
 
     public String getModelPath() {
         return this.MODEL_PATH;
+    }
+
+    public void setSessionAttribute( String session ){
+        this.session_attribute = session;
+    }
+    public String getSessionAttribute(){
+        return this.session_attribute;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

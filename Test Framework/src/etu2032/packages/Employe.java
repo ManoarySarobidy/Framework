@@ -1,11 +1,14 @@
 package etu2032.packages;
 
+import etu2032.framework.annotation.Session;
 import etu2032.framework.annotation.Scope;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.FileUpload;
 import etu2032.framework.annotation.Auth;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.annotation.RequestParameter;
+
+import java.util.HashMap;
 import java.util.Vector;
 import java.sql.Date;
 
@@ -17,6 +20,9 @@ public class Employe{
 	Date date;
 	String[] days;
 	FileUpload badge;
+
+	// Add HashMap variable for storing datas
+	HashMap<String, Object> sessions = new HashMap<String, Object>();
 
 	public void setDays(String[] days){
 		this.days = days;
@@ -38,6 +44,14 @@ public class Employe{
 
 	public void setBadge(FileUpload upload){
 		this.badge = upload;
+	}
+
+	public void setSessions( HashMap<String , Object> sessions ){
+		this.sessions = sessions;
+	}
+
+	public HashMap<String, Object> getSessions(){
+		return this.sessions;
 	}
 
 	public FileUpload getBadge(){
@@ -77,6 +91,7 @@ public class Employe{
 		return returns;
 	}
 
+	@Session()
 	@Auth()
 	@Url( url = "/emp-add" )
 	public ModelView addEmp(  ){
