@@ -86,6 +86,7 @@ public class Employe{
 		emps.add( new Employe("Sarobidy") );
 		emps.add( new Employe("Rodolphe") );
 		emps.add( new Employe("Fanilo") );
+//		bonjour je mange des enfants
 		ModelView returns = new ModelView("employe.jsp");
 		returns.addItem("emp-list" , emps); 
 		return returns;
@@ -113,6 +114,7 @@ public class Employe{
 		emps.add( new Employe("Sarobidy 4" , 5) );
 
 		ModelView mv = new ModelView("Result.jsp");
+		mv.setJson( true );
 		Employe retour = null;
 		for( Employe e : emps ){
 			if( e.getId() == id ){

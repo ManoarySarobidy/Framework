@@ -14,6 +14,7 @@ import etu2032.framework.exception.AuthFailedException;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.ClassUtility;
 import etu2032.framework.utility.FileUpload;
+import com.google.gson.*;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.*;
@@ -53,7 +54,7 @@ public class FrontServlet extends HttpServlet {
         this.out = response.getWriter();
         String url = request.getRequestURI().trim();
         url = url.substring(request.getContextPath().length()).trim();
-        this.displayUrls(url);
+        // this.displayUrls(url);
         try {
             Mapping urls = this.getMappingUrl().get(url);            
             Class<?> tr = Class.forName(urls.getClassName());
@@ -121,7 +122,6 @@ public class FrontServlet extends HttpServlet {
                     o = ClassUtility.cast(o, f.getType());
                     if( tr.isAnnotationPresent(Scope.class) && tr.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
                         Object e = null;
-                        out.println( f.getName() + " ====> " + e );
                         m.invoke(object , e);
                     }
                     m.invoke(object, o);
@@ -169,7 +169,7 @@ public class FrontServlet extends HttpServlet {
                 for ( Map.Entry<String, Object> ob : sessions.entrySet() ) {
                     // Tokony hoe raha navadikako null ilay izy de afaka fafana
                     if( ob.getValue() == null ){
-                        request.getSession().remove( ob.getKey(), ob.getValue() );
+                        request.getSession().removeAttribute( ob.getKey() );
                     }else{
                         request.getSession().setAttribute( ob.getKey() , ob.getValue() );
                     }
@@ -183,9 +183,17 @@ public class FrontServlet extends HttpServlet {
                 RequestDispatcher r = request.getRequestDispatcher(view.getView());
                 HashMap<String, Object> data = view.getData();
                 HashMap<String, Object> sessions = view.getSession();
-                this.setDatas(request, data);
-                this.setSessions(request, sessions);
-                r.forward(request, response);
+                if( !view.isJson() ){
+                    this.setDatas(request, data);
+                    this.setSessions(request, sessions);
+                    r.forward(request, response);
+                }else{
+                    response.setContentType("application/json");
+                    Gson gson = new Gson();
+                    out.println( gson.toJson(data) );
+
+                }
+
             }
 
         } catch (NullPointerException nu) {

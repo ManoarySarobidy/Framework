@@ -12,6 +12,7 @@ cd '..'
 mkdir "$TEST"/lib
 LIB="$TEST"/lib
 cp "$FRAMEWORK/$1.jar" "$LIB"
+cp "$FRAMEWORK/gson-2.10.1.jar" "$LIB"
 
 # Script 2
 cd "$TEST"
