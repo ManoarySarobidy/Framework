@@ -19,7 +19,7 @@ do
 	cp "$FILE" "$SRC" # Copiena eo ivelany ny . java rehetra
 done
 
-javac -d $BIN "$SRC"/*.java -parameters # compilena any anaty bin ny java
+javac -cp $BIN"gson-2.10.1.jar" -d $BIN "$SRC"/*.java -parameters # compilena any anaty bin ny java
 rm $SRC/*.java # alana ny java eo ivelany mba tsy hisy trace
 
 cd $BIN # miditra any anaty bin!
