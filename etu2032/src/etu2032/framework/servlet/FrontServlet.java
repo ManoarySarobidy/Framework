@@ -8,6 +8,7 @@ import etu2032.framework.Mapping;
 import etu2032.framework.annotation.Auth;
 import etu2032.framework.annotation.RequestParameter;
 import etu2032.framework.annotation.Scope;
+import etu2032.framework.annotation.Rest;
 import etu2032.framework.annotation.Session;
 import etu2032.framework.annotation.Url;
 import etu2032.framework.exception.AuthFailedException;
@@ -178,23 +179,26 @@ public class FrontServlet extends HttpServlet {
 
             // Re - get the value from the object
 
+            Gson gson = new Gson();
             if (res instanceof ModelView) {
                 ModelView view = (ModelView) res;
-                RequestDispatcher r = request.getRequestDispatcher(view.getView());
                 HashMap<String, Object> data = view.getData();
                 HashMap<String, Object> sessions = view.getSession();
                 if( !view.isJson() ){
+                    RequestDispatcher r = request.getRequestDispatcher(view.getView());
                     this.setDatas(request, data);
                     this.setSessions(request, sessions);
                     r.forward(request, response);
                 }else{
                     response.setContentType("application/json");
-                    Gson gson = new Gson();
                     out.println( gson.toJson(data) );
-
                 }
-
+            }else if( method.isAnnotationPresent(Rest.class)  ){
+                response.setContentType("application/json");
+                out.println( gson.toJson(res) );
             }
+            // Anontaniana hoe manana an'ilay annotation ve enao
+            // Si oui de averina ny Gson
 
         } catch (NullPointerException nu) {
             out.println("Désolé cette url n'existe pas ");
