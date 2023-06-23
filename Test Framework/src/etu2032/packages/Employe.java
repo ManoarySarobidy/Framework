@@ -2,6 +2,7 @@ package etu2032.packages;
 
 import etu2032.framework.annotation.Session;
 import etu2032.framework.annotation.Scope;
+import etu2032.framework.annotation.Rest;
 import etu2032.framework.modelview.ModelView;
 import etu2032.framework.utility.FileUpload;
 import etu2032.framework.annotation.Auth;
@@ -124,6 +125,13 @@ public class Employe{
 		}
 		mv.addItem("Employe" , retour);
 		return mv;
+	}
+
+	@Rest
+	@Url( url = "/getSarobidy" )
+	public Employe getSarobidy() {
+		Employe employe = new Employe( "Sarobidy" , 0341422651 );
+		return employe;
 	}
 
 }
