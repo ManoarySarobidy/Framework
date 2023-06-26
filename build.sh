@@ -6,6 +6,7 @@
 TEST="./Test Framework/"
 FRAMEWORK="./etu2032"
 TOMCAT=$HOME/Desktop/tomcat/webapps
+
 cd './etu2032/'
 ./compile.sh $1 
 cd '..'
