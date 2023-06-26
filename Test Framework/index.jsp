@@ -63,7 +63,7 @@
             </div>
         </div>
     </div>
-    <a href=""> Inserer dept </a>
+    <a href="insert-dept"> Inserer dept </a>
 
 </body>
 </html>

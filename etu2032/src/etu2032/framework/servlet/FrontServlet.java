@@ -53,125 +53,34 @@ public class FrontServlet extends HttpServlet {
         try {
             Mapping urls = this.getMappingUrl().get(url);
             Class<?> tr = Class.forName( urls.getClassName() );
-            Field[] fields = tr.getDeclaredFields();
-            Method[] methods = tr.getDeclaredMethods();
             String methodName = urls.getMethod();
-            Method willBeinvoked = null;
-            Object[] params = null;
-
             Object object = this.getInstance(urls.getClassName());
             List<String> att = Collections.list(request.getParameterNames());
 
-            for (Method m : methods) {
-                boolean isPresent = m.isAnnotationPresent(Url.class) && (((Url) m.getAnnotation(Url.class)).url().equals(url));
-                if (m.getName().equals(methodName) && isPresent) {
-                    willBeinvoked = m;
-                    break;
-                }
-            }
+            Method method = this.getMethod(tr, methodName, url);
+            this.handleAuthentification(method, request);
 
-            // For setting function parameters
-            if( willBeinvoked.isAnnotationPresent(Auth.class) ){
-                Auth auth = willBeinvoked.getAnnotation(Auth.class);
-                Object sessionN = request.getSession().getAttribute(this.getSessionName());
-                Object sessionP = request.getSession().getAttribute(this.getSessionProfile());
-                if( sessionN == null || (sessionN != null && !auth.user().isEmpty()  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
-                    throw new AuthFailedException("Sorry You can't access that url with your privileges : " + sessionP);
-                }
-            }
+            Object[] parameters = this.handleParameters(method, request, att);
 
-            Parameter[] parameters = willBeinvoked.getParameters();
-            params = (parameters.length == 0) ? null : new Object[parameters.length];
-            int size = parameters.length;
-            for (int i = 0; i < size; i++) {
-                Parameter pa = parameters[i];
-                if (pa.isAnnotationPresent(RequestParameter.class)) {
-                    RequestParameter para = pa.getAnnotation(RequestParameter.class);
-                    String name = ((pa.getType().isArray()) ? para.name() + "[]" : para.name());
-                    if (this.contains(att, name)) {
-                        Object p = (pa.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
-                        p = ClassUtility.cast(pa, String.valueOf(p));
-                        params[i] = p;
-                    }
-                }
-            }
+            this.handleFields(object, tr, request, att);
 
-            for (Field f : fields) {
-                String name = ((f.getType().isArray()) ? f.getName() + "[]" : f.getName());
-                if (this.contains(att, name)) {
-                    Method m = tr.getMethod(ClassUtility.getSetter(f), f.getType());
-                    Object o = (f.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
-                    o = ClassUtility.cast(o, f.getType());
-                    if( tr.isAnnotationPresent(Scope.class) && tr.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
-                        Object e = null;
-                        m.invoke(object , e);
-                    }
-                    m.invoke(object, o);
-                }
-            }
-
-            try {
-                Collection<Part> files = request.getParts();
-                for (Field f : fields) {
-                    if (f.getType() == etu2032.framework.utility.FileUpload.class) {
-                        Method m = tr.getMethod(ClassUtility.getSetter(f), f.getType());
-                        Object o = this.fileTraitement(files, f);
-                        if( tr.isAnnotationPresent(Scope.class) && tr.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
-                            Object e = null;
-                            m.invoke( object, e );
-                        }
-                        m.invoke(object, o);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            Method method = willBeinvoked;
+            this.handleFile(tr, request, object);
 
             if( method.isAnnotationPresent(Session.class) ){
-                String sessionAttribute = "set" + "Sessions";
-                ArrayList<String> sessions = Collections.list(request.getSession().getAttributeNames());
-                HashMap<String, Object> sessionCopy = new HashMap<String, Object>();
-                for (String attribute : sessions) {
-                    Object value = request.getSession().getAttribute(attribute);
-                    sessionCopy.put( attribute , value );
-                }
-                Method sessionMethod = object.getClass().getDeclaredMethod(sessionAttribute, HashMap.class);
-                sessionMethod.invoke( object, sessionCopy );
+                this.settingSession(request, object);
             }
 
-            Object res = method.invoke(object, params);
+            Object res = method.invoke(object, parameters);
 
             if( method.isAnnotationPresent(Session.class) ){
-                String sessionAttribute = "get" + "Sessions";
-                Method sessionMethod = object.getClass().getDeclaredMethod(sessionAttribute);
-                HashMap<String, Object> sessions = (HashMap<String, Object>) sessionMethod.invoke( object );
-                for ( Map.Entry<String, Object> ob : sessions.entrySet() ) {
-                    // Tokony hoe raha navadikako null ilay izy de afaka fafana
-                    if( ob.getValue() == null ){
-                        request.getSession().removeAttribute( ob.getKey() );
-                    }else{
-                        request.getSession().setAttribute( ob.getKey() , ob.getValue() );
-                    }
-                }
+                this.updateSession(request, object);
             }
-            if (res instanceof ModelView) {
-                ModelView view = (ModelView) res;
-                HashMap<String, Object> data = view.getData();
-                HashMap<String, Object> sessions = view.getSession();
-                if( !view.isJson() ){
-                    RequestDispatcher r = request.getRequestDispatcher(view.getView());
-                    this.setDatas(request, data);
-                    this.setSessions(request, sessions);
-                    r.forward(request, response);
-                }else{
-                    response.setContentType("application/json");
-                    out.println( gson.toJson(data) );
-                }
-            }else if( method.isAnnotationPresent(Rest.class)  ){
+
+            if( method.isAnnotationPresent(Rest.class)  ){
                 response.setContentType("application/json");
-                out.println( gson.toJson(res) );
+                out.println( this.gson.toJson(res) );
+            }else{
+                dispatch( request, response, res );
             }
 
         } catch (NullPointerException nu) {
@@ -181,6 +90,118 @@ public class FrontServlet extends HttpServlet {
             ex.printStackTrace(out);
         } catch (Exception e) {
             e.printStackTrace(out);
+        }
+    }
+
+// Getting Methods
+    private Method getMethod( Class<?> classs , String methodName , String url){
+        Method[] methods = classs.getDeclaredMethods();
+        for (Method m : methods) {
+            boolean isPresent = m.isAnnotationPresent(Url.class) && (((Url) m.getAnnotation(Url.class)).url().equals(url));
+            if (m.getName().equals(methodName) && isPresent) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+// Parameters handlers
+
+    private Object[] handleParameters( Method method, HttpServletRequest request, List<String> attributes ) throws Exception{
+        Object[] params = null;
+        Parameter[] parameters = method.getParameters();
+        params = (parameters.length == 0) ? null : new Object[parameters.length];
+        int size = parameters.length;
+        for (int i = 0; i < size; i++) {
+            Parameter pa = parameters[i];
+            if (pa.isAnnotationPresent(RequestParameter.class)) {
+                RequestParameter para = pa.getAnnotation(RequestParameter.class);
+                String name = ((pa.getType().isArray()) ? para.name() + "[]" : para.name());
+                if (this.contains(attributes, name)) {
+                    Object p = (pa.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
+                    p = ClassUtility.cast(pa, String.valueOf(p));
+                    params[i] = p;
+                }
+            }
+        }
+        return params;
+    }
+
+// Authentification handlers
+    private void handleAuthentification( Method method , HttpServletRequest request ) throws AuthFailedException{
+        if( method.isAnnotationPresent(Auth.class) ){
+            Auth auth = method.getAnnotation(Auth.class);
+            Object sessionN = request.getSession().getAttribute(this.getSessionName());
+            Object sessionP = request.getSession().getAttribute(this.getSessionProfile());
+            if( sessionN == null || (sessionN != null && !auth.user().isEmpty()  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
+                throw new AuthFailedException("Sorry You can't access that url with your privileges : " + sessionP);
+            }
+        }
+    }
+
+// Fields Handlers
+
+    private void handleFields( Object object, Class<?> classs, HttpServletRequest request, List<String> attributes ) throws Exception{
+        Field[] fields = classs.getDeclaredFields();
+        for (Field f : fields) {
+            String name = ((f.getType().isArray()) ? f.getName() + "[]" : f.getName());
+            if (this.contains(attributes, name)) {
+                Method m = classs.getMethod(ClassUtility.getSetter(f), f.getType());
+                Object o = (f.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
+                o = ClassUtility.cast(o, f.getType());
+                if( classs.isAnnotationPresent(Scope.class) && classs.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
+                    Object e = null;
+                    m.invoke(object , e);
+                }
+                m.invoke(object, o);
+            }
+        }
+    }
+
+// Session handlers
+
+    private void settingSession( HttpServletRequest request, Object caller ) throws Exception{
+        String sessionAttribute = "set" + "Sessions";
+        ArrayList<String> sessions = Collections.list(request.getSession().getAttributeNames());
+        HashMap<String, Object> sessionCopy = new HashMap<String, Object>();
+        for (String attribute : sessions) {
+            Object value = request.getSession().getAttribute(attribute);
+            sessionCopy.put( attribute , value );
+        }
+        Method sessionMethod = caller.getClass().getDeclaredMethod(sessionAttribute, HashMap.class);
+        sessionMethod.invoke( caller, sessionCopy );
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateSession( HttpServletRequest request, Object object ) throws Exception{
+        String sessionAttribute = "get" + "Sessions";
+        Method sessionMethod = object.getClass().getDeclaredMethod(sessionAttribute);
+        HashMap<String, Object> sessions = (HashMap<String, Object>) sessionMethod.invoke( object );
+        for ( Map.Entry<String, Object> ob : sessions.entrySet() ) {
+            if( ob.getValue() == null ){
+                request.getSession().removeAttribute( ob.getKey() );
+            }else{
+                request.getSession().setAttribute( ob.getKey() , ob.getValue() );
+            }
+        }
+    }
+
+// Dispatcher
+
+    public void dispatch( HttpServletRequest request, HttpServletResponse response, Object returns ) throws Exception{
+        if (returns instanceof ModelView) {
+            ModelView view = (ModelView) returns;
+            HashMap<String, Object> data = view.getData();
+            HashMap<String, Object> sessions = view.getSession();
+            if( !view.isJson() ){
+                RequestDispatcher r = request.getRequestDispatcher(view.getView());
+                this.setDatas(request, data);
+                this.setSessions(request, sessions);
+                r.forward(request, response);
+            }else{
+                response.setContentType("application/json");
+                out.println( gson.toJson(data) );
+            }
         }
     }
 
@@ -195,44 +216,25 @@ public class FrontServlet extends HttpServlet {
         }
     }
 
-// File traitement part
-    private FileUpload fileTraitement(Collection<Part> files, Field field) {
-        FileUpload file = new FileUpload();
-        String name = field.getName();
-        boolean exists = false;
-        String filename = null;
-        Part filepart = null;
-        for (Part part : files) {
-            if (part.getName().equals(name)) {
-                filepart = part;
-                exists = true;
-                break;
+// File Handler
+    private void handleFile( Class<?> classs, HttpServletRequest request, Object object ){
+        Field[] fields = classs.getDeclaredFields();
+        try {
+            Collection<Part> files = request.getParts();
+            for (Field f : fields) {
+                if (f.getType() == etu2032.framework.utility.FileUpload.class) {
+                    Method m = classs.getMethod(ClassUtility.getSetter(f), f.getType());
+                    Object o = ClassUtility.fileTraitement(files, f);
+                    // Object o = this.fileTraitement(files, f);
+                    if( classs.isAnnotationPresent(Scope.class) && classs.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
+                        m.invoke( object, (Object) null );
+                    }
+                    m.invoke(object, o);
+                }
             }
-        }
-        try (InputStream io = filepart.getInputStream()) {
-            ByteArrayOutputStream buffers = new ByteArrayOutputStream();
-            byte[] buffer = new byte[(int) filepart.getSize()];
-            int read;
-            while ((read = io.read(buffer, 0, buffer.length)) != -1) {
-                buffers.write(buffer, 0, read);
-            }
-            file.setName(this.getFileName(filepart));
-            file.setBytes(buffers.toByteArray());
-            return file;
         } catch (Exception e) {
-            e.printStackTrace(this.out);
-            return null;
+            e.printStackTrace();
         }
-    }
-
-    private String getFileName(Part part) {
-        String contentDisposition = part.getHeader("content-disposition");
-        String[] parts = contentDisposition.split(";");
-        for (String partStr : parts) {
-            if (partStr.trim().startsWith("filename"))
-                return partStr.substring(partStr.indexOf('=') + 1).trim().replace("\"", "");
-        }
-        return null;
     }
 
 // Additional function
@@ -263,8 +265,7 @@ public class FrontServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             super.init();
-            String packages = String.valueOf(this.getInitParameter("packages"));
-            
+            String packages = String.valueOf(this.getInitParameter("packages")); 
             String auth_session = String.valueOf( this.getInitParameter("sessionName") );
             String auth_profile = String.valueOf( this.getInitParameter("sessionProfile") );
             String sess_var = String.valueOf( this.getInitParameter("sessionAttribute") );
