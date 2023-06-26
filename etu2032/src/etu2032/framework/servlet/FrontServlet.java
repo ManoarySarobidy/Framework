@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package etu2032.framework.servlet;
 
 import etu2032.framework.Mapping;
@@ -25,10 +21,11 @@ import java.util.*;
 
 /**
  *
- * @author sarobidy
+ * @author Manoary Sarobidy
  */
 
 @MultipartConfig
+
 public class FrontServlet extends HttpServlet {
 
 // Attribute declaration
@@ -36,7 +33,7 @@ public class FrontServlet extends HttpServlet {
     String MODEL_PATH;
     int BYTE_SIZE = 8192;
     PrintWriter out;
-
+    Gson gson = new Gson();
     String session_name;
     String session_profile;
 
@@ -45,30 +42,26 @@ public class FrontServlet extends HttpServlet {
     HashMap<String, Mapping> mappingUrl;
     HashMap<String, Object> singleton = new HashMap<String, Object>();
 
-    int appel = 0;
 // Process Request
 
     @SuppressWarnings("unchecked")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // response.setContentType("text/plain;charset=UTF-8");
         this.out = response.getWriter();
         String url = request.getRequestURI().trim();
         url = url.substring(request.getContextPath().length()).trim();
-        // this.displayUrls(url);
         try {
-            Mapping urls = this.getMappingUrl().get(url);            
-            Class<?> tr = Class.forName(urls.getClassName());
+            Mapping urls = this.getMappingUrl().get(url);
+            Class<?> tr = Class.forName( urls.getClassName() );
             Field[] fields = tr.getDeclaredFields();
             Method[] methods = tr.getDeclaredMethods();
             String methodName = urls.getMethod();
             Method willBeinvoked = null;
             Object[] params = null;
 
-            // Object object = tr.getConstructor().newInstance();
             Object object = this.getInstance(urls.getClassName());
-            
             List<String> att = Collections.list(request.getParameterNames());
+
             for (Method m : methods) {
                 boolean isPresent = m.isAnnotationPresent(Url.class) && (((Url) m.getAnnotation(Url.class)).url().equals(url));
                 if (m.getName().equals(methodName) && isPresent) {
@@ -76,45 +69,33 @@ public class FrontServlet extends HttpServlet {
                     break;
                 }
             }
-            // request.getSession().setAttribute( "sarobidy", "origine" );
 
             // For setting function parameters
-            if (willBeinvoked != null) {
-
-                // Si hoe manana annotation ilay methode de atao ahoana
-                // Andao ary hoe andramana
-                // Raha manana authentification auth ilay méthode de anontaniana ny fandehany
-                // Raha ohatra ka hoe mitovy ilay izy de tsy atao inoninona
-
-                if( willBeinvoked.isAnnotationPresent(Auth.class) ){
-                    // Si présent de checkeko hoe connecte ve
-                    Auth auth = willBeinvoked.getAnnotation(Auth.class);
-                    Object sessionN = request.getSession().getAttribute(this.getSessionName());
-                    Object sessionP = request.getSession().getAttribute(this.getSessionProfile());
-
-                    if( sessionN == null || (sessionN != null && !auth.user().isEmpty()  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
-                        throw new AuthFailedException("Sorry You can't access that url with your privileges : " + sessionP);
-                    }
-
+            if( willBeinvoked.isAnnotationPresent(Auth.class) ){
+                Auth auth = willBeinvoked.getAnnotation(Auth.class);
+                Object sessionN = request.getSession().getAttribute(this.getSessionName());
+                Object sessionP = request.getSession().getAttribute(this.getSessionProfile());
+                if( sessionN == null || (sessionN != null && !auth.user().isEmpty()  && !((String) sessionP).equalsIgnoreCase(auth.user()) ) ){
+                    throw new AuthFailedException("Sorry You can't access that url with your privileges : " + sessionP);
                 }
+            }
 
-                Parameter[] parameters = willBeinvoked.getParameters();
-                params = (parameters.length == 0) ? null : new Object[parameters.length];
-                int size = parameters.length;
-                for (int i = 0; i < size; i++) {
-                    Parameter pa = parameters[i];
-                    if (pa.isAnnotationPresent(RequestParameter.class)) {
-                        RequestParameter para = pa.getAnnotation(RequestParameter.class);
-                        String name = ((pa.getType().isArray()) ? para.name() + "[]" : para.name());
-                        if (this.contains(att, name)) {
-                            Object p = (pa.getType().isArray()) ? request.getParameterValues(name)
-                                    : request.getParameter(name);
-                            p = ClassUtility.cast(pa, String.valueOf(p));
-                            params[i] = p;
-                        }
+            Parameter[] parameters = willBeinvoked.getParameters();
+            params = (parameters.length == 0) ? null : new Object[parameters.length];
+            int size = parameters.length;
+            for (int i = 0; i < size; i++) {
+                Parameter pa = parameters[i];
+                if (pa.isAnnotationPresent(RequestParameter.class)) {
+                    RequestParameter para = pa.getAnnotation(RequestParameter.class);
+                    String name = ((pa.getType().isArray()) ? para.name() + "[]" : para.name());
+                    if (this.contains(att, name)) {
+                        Object p = (pa.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
+                        p = ClassUtility.cast(pa, String.valueOf(p));
+                        params[i] = p;
                     }
                 }
             }
+
             for (Field f : fields) {
                 String name = ((f.getType().isArray()) ? f.getName() + "[]" : f.getName());
                 if (this.contains(att, name)) {
@@ -148,7 +129,6 @@ public class FrontServlet extends HttpServlet {
 
             Method method = willBeinvoked;
 
-            // 1 - Ask if session annotation exists
             if( method.isAnnotationPresent(Session.class) ){
                 String sessionAttribute = "set" + "Sessions";
                 ArrayList<String> sessions = Collections.list(request.getSession().getAttributeNames());
@@ -176,10 +156,6 @@ public class FrontServlet extends HttpServlet {
                     }
                 }
             }
-
-            // Re - get the value from the object
-
-            Gson gson = new Gson();
             if (res instanceof ModelView) {
                 ModelView view = (ModelView) res;
                 HashMap<String, Object> data = view.getData();
@@ -197,8 +173,6 @@ public class FrontServlet extends HttpServlet {
                 response.setContentType("application/json");
                 out.println( gson.toJson(res) );
             }
-            // Anontaniana hoe manana an'ilay annotation ve enao
-            // Si oui de averina ny Gson
 
         } catch (NullPointerException nu) {
             out.println("Désolé cette url n'existe pas ");
@@ -265,30 +239,21 @@ public class FrontServlet extends HttpServlet {
 
     private Object getInstance( String className ) throws 
         ClassNotFoundException, InstantiationException,NoSuchMethodException, IllegalAccessException, InvocationTargetException{
-        // Inona ny atao
-        // Anontaniana aloha hoe misy ao anatin'ilay singleton ve
         if( this.getSingletons().containsKey( className ) ){
-            // Traitena ilay izy
             Object instance = this.getSingletons().get(className);
             if( instance == null ){
-                appel++;
                 Object newInstance = Class.forName( className ).getConstructor().newInstance();
-                this.getSingletons().replace( className, null, newInstance );
+                this.getSingletons().put( className, newInstance );
                 instance = newInstance;
             }
             return instance;
         }
-        appel++;
         return Class.forName( className ).getConstructor().newInstance();
     }
 
     private boolean contains(List<String> datas, String data) {
         for (String e : datas) {
-            // String e = datas.nextElement();
-            e = e.trim();
-            if (e.equalsIgnoreCase(data)) {
-                return true;
-            }
+            if (e.trim().equalsIgnoreCase(data)) return true;
         }
         return false;
     }
@@ -297,9 +262,8 @@ public class FrontServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-
             super.init();
-            String packages = String.valueOf(this.getInitParameter("packages")); // Avadika dynamique fotsiny ito
+            String packages = String.valueOf(this.getInitParameter("packages"));
             
             String auth_session = String.valueOf( this.getInitParameter("sessionName") );
             String auth_profile = String.valueOf( this.getInitParameter("sessionProfile") );
@@ -322,9 +286,7 @@ public class FrontServlet extends HttpServlet {
                             this.getMappingUrl().put(url.url(), map);
                         }
                     }
-                    // Eto no manampy azy
                 }
-                // Si la classe contient l'annotation Scope et a comme nom singleton
                 if (c.isAnnotationPresent(Scope.class)
                         && (c.getAnnotation(Scope.class)).name().equalsIgnoreCase("singleton")) {
                     this.getSingletons().put(c.getName(),  null );
@@ -345,11 +307,9 @@ public class FrontServlet extends HttpServlet {
         this.session_profile = name;
     }
 
-
     private String getSessionName(){
         return this.session_name;
     }
-
 
     private String getSessionProfile(){
         return this.session_profile;
@@ -359,14 +319,12 @@ public class FrontServlet extends HttpServlet {
         for (Map.Entry<String, Object> sets : data.entrySet()) {
             request.setAttribute(sets.getKey(), sets.getValue());
         }
-        // request.setAttribute(  );
     }
     private void setSessions(HttpServletRequest request, HashMap<String, Object> sessions) throws Exception {
         HttpSession session = request.getSession();
         for (Map.Entry<String, Object> sets : sessions.entrySet()) {
             session.setAttribute(sets.getKey(), sets.getValue());
         }
-        // request.setAttribute(  );
     }
 
     public HashMap<String, Object> getSingletons() {
@@ -401,31 +359,16 @@ public class FrontServlet extends HttpServlet {
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
+
 }

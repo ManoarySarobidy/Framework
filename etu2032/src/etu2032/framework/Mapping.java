@@ -1,12 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package etu2032.framework;
 
 /**
- *
- * @author sarobidy
+ * This class is used by the Front Servlet
+ * to map method or function with the url annotation
+ * see also the {@link etu2032.framework.annotation.Url} Url annotation 
+ * @author Manoary Sarobidy
  */
 public class Mapping {
     String className;

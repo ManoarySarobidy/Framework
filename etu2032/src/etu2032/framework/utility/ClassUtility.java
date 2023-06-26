@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package etu2032.framework.utility;
 
 import java.io.File;
@@ -13,16 +9,12 @@ import java.lang.reflect.Parameter;
 import java.text.SimpleDateFormat;
 
 /**
- *
- * @author sarobidy
+ * This class is an utility class used by the Front Servlet
+ * 
+ * @author Manoary Sarobidy ETU 002032
  */
 public class ClassUtility {
     
-//    public static Set<Class> getClassFrom(String  packages){
-//          InputStream input = ClassLoader.getSystemClassLoader().getResourceAsStream(packages.replaceAll("[.]","/"));
-//          BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-//          return reader.lines().filter(line->line.endsWith(".class")).map(line->getClass(line ,packages)).collect(Collectors.toSet());
-//    }
     public static List<Class<?>> getClassFrom(String  packages) throws Exception{
             String path = packages.replaceAll("[.]", "/");
             URL packageUrl = Thread.currentThread().getContextClassLoader().getResource(path);
@@ -35,19 +27,9 @@ public class ClassUtility {
             }
             return lists;
     }
-    
-    private static Class<?> getClass(String className , String packages ){
-        try{
-            return Class.forName(packages+"."+className.substring(0,className.lastIndexOf('.')));
-        }catch(ClassNotFoundException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static String getSetter( Field f ){
-        // Inona ny ataoko ato
-        // Maka Setter
+
         String prefix = ( f.getType() == Boolean.TYPE ) ? "is" : "set";
         String fieldName = f.getName();
         fieldName = fieldName.substring(0,1).toUpperCase().concat(fieldName.substring(1));
@@ -94,9 +76,7 @@ public class ClassUtility {
             // if( e == null ){
             //     throw new Exception("Date");
             // }
-        }catch(Exception e){
-
-        }
+        }catch(Exception e){}
         return object;
     }
 
