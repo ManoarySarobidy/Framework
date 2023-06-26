@@ -1,5 +1,16 @@
 package etu2032.framework.utility;
 
+/**
+ * This class is used to handle file uploading.
+ * 
+ * Example :
+ * 		-> public class Employe{
+ * 			FileUpload uploadFile;
+ * 		}
+ * 
+ * @author Manoary Sarobidy
+ */
+
 public class FileUpload {
 	String name;
 	String path;
