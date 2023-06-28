@@ -19,6 +19,9 @@ cp -R "./lib/"* $LIBS
 ./compile.sh $LIBS $CLASSES
 cp  "./"*.jsp $TEMP
 cp  "./"*.xml $WEBINF
+cp -R "./Test/css" $TEMP
+cp -R "./Test/js" $TEMP
+
 cd $TEMP
 jar -cf $1.war .
 cd ..
