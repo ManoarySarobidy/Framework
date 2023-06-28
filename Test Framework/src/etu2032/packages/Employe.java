@@ -18,11 +18,10 @@ public class Employe{
 
 	String name;
 	Integer id;
-	Date date;
+	Date date = Date.valueOf("2023-06-23");
 	String[] days;
 	FileUpload badge;
 
-	// Add HashMap variable for storing datas
 	HashMap<String, Object> sessions = new HashMap<String, Object>();
 
 	public void setDays(String[] days){
@@ -38,7 +37,7 @@ public class Employe{
 		this.setName(name);
 		this.setId(500);
 	}
-	public Employe(String name , int id ){
+	public Employe(String name , Integer id ){
 		this.setName(name);
 		this.setId(id);
 	}
@@ -87,7 +86,6 @@ public class Employe{
 		emps.add( new Employe("Sarobidy") );
 		emps.add( new Employe("Rodolphe") );
 		emps.add( new Employe("Fanilo") );
-//		bonjour je mange des enfants
 		ModelView returns = new ModelView("employe.jsp");
 		returns.addItem("emp-list" , emps); 
 		return returns;
@@ -106,7 +104,6 @@ public class Employe{
 
 	@Url( url = "/find" )
 	public ModelView findById( @RequestParameter(name = "id" ) Integer id ){
-	// public ModelView findById( Integer id ){
 		Vector<Employe> emps = new Vector<Employe>();
 		emps.add( new Employe("Sarobidy" , 1) );
 		emps.add( new Employe("Sarobidy Manoary" , 2) );
@@ -130,7 +127,7 @@ public class Employe{
 	@Rest
 	@Url( url = "/getSarobidy" )
 	public Employe getSarobidy() {
-		Employe employe = new Employe( "Sarobidy" , 0341422651 );
+		Employe employe = new Employe( "Sarobidy" , 34 );
 		return employe;
 	}
 

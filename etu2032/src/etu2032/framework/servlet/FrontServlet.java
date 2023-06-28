@@ -56,8 +56,8 @@ public class FrontServlet extends HttpServlet {
             String methodName = urls.getMethod();
             Object object = this.getInstance(urls.getClassName());
             List<String> att = Collections.list(request.getParameterNames());
-
             Method method = this.getMethod(tr, methodName, url);
+            
             this.handleAuthentification(method, request);
 
             Object[] parameters = this.handleParameters(method, request, att);
@@ -77,8 +77,7 @@ public class FrontServlet extends HttpServlet {
             }
 
             if( method.isAnnotationPresent(Rest.class)  ){
-                response.setContentType("application/json");
-                out.println( this.gson.toJson(res) );
+                this.handleJson(res, response);
             }else{
                 dispatch( request, response, res );
             }
@@ -149,10 +148,7 @@ public class FrontServlet extends HttpServlet {
                 Method m = classs.getMethod(ClassUtility.getSetter(f), f.getType());
                 Object o = (f.getType().isArray()) ? request.getParameterValues(name) : request.getParameter(name);
                 o = ClassUtility.cast(o, f.getType());
-                if( classs.isAnnotationPresent(Scope.class) && classs.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
-                    Object e = null;
-                    m.invoke(object , e);
-                }
+                this.handleSingleton(classs, m, object);
                 m.invoke(object, o);
             }
         }
@@ -186,6 +182,13 @@ public class FrontServlet extends HttpServlet {
         }
     }
 
+// Json Handler
+
+    private void handleJson( Object data, HttpServletResponse response) throws Exception{
+        response.setContentType("application/json");
+        out.println( gson.toJson(data) );
+    }
+
 // Dispatcher
 
     public void dispatch( HttpServletRequest request, HttpServletResponse response, Object returns ) throws Exception{
@@ -199,8 +202,7 @@ public class FrontServlet extends HttpServlet {
                 this.setSessions(request, sessions);
                 r.forward(request, response);
             }else{
-                response.setContentType("application/json");
-                out.println( gson.toJson(data) );
+                this.handleJson(data, response);
             }
         }
     }
@@ -225,10 +227,7 @@ public class FrontServlet extends HttpServlet {
                 if (f.getType() == etu2032.framework.utility.FileUpload.class) {
                     Method m = classs.getMethod(ClassUtility.getSetter(f), f.getType());
                     Object o = ClassUtility.fileTraitement(files, f);
-                    // Object o = this.fileTraitement(files, f);
-                    if( classs.isAnnotationPresent(Scope.class) && classs.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton") ){
-                        m.invoke( object, (Object) null );
-                    }
+                    this.handleSingleton(classs, m, object);
                     m.invoke(object, o);
                 }
             }
@@ -237,18 +236,28 @@ public class FrontServlet extends HttpServlet {
         }
     }
 
+// Singleton Handler
+
+    private boolean isSingleton( Class<?> classe ){
+        return (classe.isAnnotationPresent(Scope.class) && classe.getAnnotation(Scope.class).name().equalsIgnoreCase("singleton"));
+    }
+
+    private void handleSingleton( Class<?> classe, Method method , Object object ) throws Exception{
+        if( isSingleton(classe) ){
+            method.invoke(object, (Object) null);
+        }
+    }
+
 // Additional function
 
     private Object getInstance( String className ) throws 
         ClassNotFoundException, InstantiationException,NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         if( this.getSingletons().containsKey( className ) ){
-            Object instance = this.getSingletons().get(className);
-            if( instance == null ){
+            if( this.getSingletons().get(className) == null ){
                 Object newInstance = Class.forName( className ).getConstructor().newInstance();
                 this.getSingletons().put( className, newInstance );
-                instance = newInstance;
             }
-            return instance;
+            return this.getSingletons().get(className);
         }
         return Class.forName( className ).getConstructor().newInstance();
     }
@@ -282,7 +291,7 @@ public class FrontServlet extends HttpServlet {
                 for (Method m : methods) {
                     if (m.isAnnotationPresent(Url.class)) {
                         Url url = m.getAnnotation(Url.class);
-                        if (!url.url().isEmpty() && url.url() != null) {
+                        if ( url.url() != null && !url.url().isEmpty() ) {
                             Mapping map = new Mapping(c.getName(), m.getName());
                             this.getMappingUrl().put(url.url(), map);
                         }
