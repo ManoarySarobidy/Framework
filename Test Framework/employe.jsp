@@ -54,6 +54,7 @@
 					<% } %>
 				</tbody>
 			</table>
+			<a href="log-out"> Log out </a>
 		</div>
 	</div>	
 

@@ -193,15 +193,28 @@ public class FrontServlet extends HttpServlet {
             ModelView view = (ModelView) returns;
             HashMap<String, Object> data = view.getData();
             HashMap<String, Object> sessions = view.getSession();
+            // Okey ampiana gerance ana session izany ilay izy
             if( !view.isJson() ){
                 RequestDispatcher r = request.getRequestDispatcher(view.getView());
                 this.setDatas(request, data);
                 this.setSessions(request, sessions);
+                this.handleSession(view, request);
                 r.forward(request, response);
             }else{
                 response.setContentType("application/json");
                 out.println( gson.toJson(data) );
             }
+        }
+    }
+
+    public void handleSession( ModelView model, HttpServletRequest request ) throws Exception{
+        if( model.invalidate() ){
+            request.getSession().invalidate();
+            return;
+        }
+        List<String> sessions = model.getRemoveSession();
+        for(String string : sessions){
+            request.getSession().removeAttribute(string);
         }
     }
 
