@@ -10,7 +10,7 @@ TOMCAT=$HOME/Desktop/tomcat/webapps
 cd './etu2032/'
 ./compile.sh $1 
 cd '..'
-mkdir "$TEST"/lib
+# mkdir "$TEST"/lib
 LIB="$TEST"/lib
 cp "$FRAMEWORK/$1.jar" "$LIB"
 cp "$FRAMEWORK/gson-2.10.1.jar" "$LIB"

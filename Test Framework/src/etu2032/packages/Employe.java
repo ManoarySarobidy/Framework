@@ -134,4 +134,11 @@ public class Employe{
 		return employe;
 	}
 
+	@Url( url = "/log-out" )
+	public ModelView logout(){
+		ModelView modelview = new ModelView("index.jsp");
+		modelview.invalidateSession(true);
+		return modelview;
+	}
+
 }

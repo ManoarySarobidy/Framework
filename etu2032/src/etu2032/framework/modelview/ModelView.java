@@ -9,13 +9,24 @@ public class ModelView {
     HashMap<String , Object> sessions = new HashMap<String, Object>();
 
     boolean json = false;
-    
+    boolean sessionInvalidate = false;
+
+    List<String> removeSession = new ArrayList<String>();
+
     public ModelView(){
         this.setData();
     }
     public ModelView( String view ){
         this.setView(view);
         this.setData();
+    }
+
+    public boolean invalidate(){
+        return this.sessionInvalidate;      
+    }
+
+    public void invalidateSession( boolean inv ){
+        this.sessionInvalidate = inv;
     }
 
     public void addItem( String key , Object value ){
@@ -60,4 +71,18 @@ public class ModelView {
         return this.json;
     }
     
+    public void removeSessions( String ...sessions ){
+        for(String session : sessions){
+            this.getRemoveSession().add(session);
+        }
+    }
+
+    public void setRemoveSession( List<String> session ){
+        this.removeSession = session;
+    }
+
+    public List<String> getRemoveSession() {
+        return this.removeSession;
+    }
+
 }
