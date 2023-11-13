@@ -19,5 +19,5 @@ cp "$FRAMEWORK/gson-2.10.1.jar" "$LIB"
 cd "$TEST"
 ./predeploy.sh testFramework
 
-cp "$2.war" ../
+cp "testFramework.war" ../
 
